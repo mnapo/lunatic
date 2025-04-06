@@ -9,6 +9,7 @@ addRelPath("src/cls")
 
 unit = require("Unit")
 
+local input = 1
 u1 = unit.new(1)
     :set("activation_function", "sigmoid")
     :set("bias", 0.4)
