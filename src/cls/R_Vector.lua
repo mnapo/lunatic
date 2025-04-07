@@ -19,8 +19,9 @@ function R_Vector.new(t)
         end
     end
 
-    local instance = t
-    instance["is_R_Vector"] = true
-    instance["dimension"] = #instance
+    local instance = ClassPrototype.new()
+        :set("is_R_Vector", true)
+        :set("dimension", true)
+        :set("values", t)
     return setmetatable(instance, R_Vector)
 end
