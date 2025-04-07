@@ -1,5 +1,4 @@
 local ClassPrototype = {}
-ClassPrototype.__index = ClassPrototype
 
 function ClassPrototype.new()
     ClassPrototype.__index = ClassPrototype
