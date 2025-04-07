@@ -1,4 +1,4 @@
-![Lunatic library logo](https://media-hosting.imagekit.io/2d533594aad043c1/Lunatic-logo-v4.png?Expires=1838676237&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=00O3BubhDtn2ynQA-wF3-J4K7Q8BjvbhUeXm0ytFM56VdbFS~kG-gQ67tzYCdsWAEBxxHR-wGasptTsBjGp1aTZ296C1R9nO7zt9MPOLXNa-B1hidC9suxg5Hc~FJqZB1oNNltPJ7IoBIB4nQjx6iRYy-adFi6eR2F2q0yZ~BwLGovUg0nstmmYvpRh3pRvddFEP6vMynpre9AVEdO-r7OVW6gRc3reardMny4WnPhumn6U0~iYfyczNQJjySjzgzl0XW~EPJGX4urqHG25lgRvIsQIyG~LaSe8xej3vm5YwSgm6ZgoO2lWxKx99GFU2fTKBWyptDUNzSQ8xSff0Og__)
+![Lunatic library logo](https://media-hosting.imagekit.io/aa314951557d42df/Lunatic-logo-v5.png?Expires=1838676681&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=I~YpFx92zWoRjnafSU0905HlBistP-48yCRTR38RglBw~vRMgfzyg8CdJSRRR9bJTu~mo71mpsvHC4JzDgqZfGC9X38mgNJM6nn7V94DLPz-PcbUOHiTkREe2unnmADkqQu8Oj23VjylGV8IrFwe0kOKTQJePMLG7gqhrphBRsEsMBqXHx33Y1-s0OpCbkXKkaYYMmZXWObJkivtQdBZAUlO6MlfLHx4PphgtGEEB7ahFvJRnArRfq6S4HRV1RlSl5fpS335ctHvzi4YfC72uqxlqmNQIrwIjq7dMEtsTWoNTgnSnZutazk6QVd6TtEZQRB4PJfXNRv1RPKRkMqkOw__)
 LLM in lua with tools like database storage handling.
 
 At it's core, it works through 3 different parts represented by classes, that can work together when the library is implemented:
