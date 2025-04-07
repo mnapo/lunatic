@@ -1,5 +1,6 @@
 local ClassPrototype = require("ClassPrototype")
-local Unit = {}
+local Unit = ClassPrototype:new()
+Unit.__index = Unit
 
 local ERROR_NOT_R_VECTOR = "Error, it can only be calculated the dot product between two real numbers vectors"
 local ERROR_DIFFERENT_DIMENSIONS = "The dot product between two vectors can't be calculated if they're of different dimensions"
@@ -22,10 +23,11 @@ local relu = function(z)
 end
 
 local calculate_dot_product = function(v1, v2)
-    if not (v1:is_R_Vector() and v2:is_R_Vector()) then
-        error(ERROR_NOT_R_VECTOR)
-    end
+    --if not (v1.is_R_Vector() and v2.is_R_Vector()) then
+    --    error(ERROR_NOT_R_VECTOR)
+    --end
     local v1_dimension = v1:get_dimension()
+    print(v1_dimension)
     if not (v1_dimension == v2:get_dimension()) then
         error(ERROR_DIFFERENT_DIMENSIONS)
     end
@@ -37,22 +39,22 @@ local calculate_dot_product = function(v1, v2)
     return dot_product
 end
 
-function Unit.new(network_id)
-    Unit.__index = Unit
-    setmetatable(Unit, {__index = ClassPrototype})
+function Unit:new(network_id)
+    local instance = ClassPrototype:new()
 
     local activation_function = ""
     local bias = 0
     local parent_network_id = network_id or 0
     local weight = 0
 
-    local instance = ClassPrototype.new()
-        :set("activation_function", activation_function)
-        :set("bias", bias)
-        :set("parent_network_id", parent_network_id)
-        :set("weight", weight)
+    instance:set("activation_function", activation_function)
+    :set("bias", bias)
+    :set("parent_network_id", parent_network_id)
+    :set("weight", weight)
 
-    return setmetatable(instance, Unit)
+    instance = setmetatable(instance, self)
+    instance.__index = self
+    return instance
 end
 
 function Unit:set(member, value)
@@ -74,6 +76,10 @@ function Unit:get_output(x)
     local biased_input = weighted_input + self:get("bias")
     local activated_input = self:get("activation_function")(biased_input)
     return activated_input
+end
+
+function Unit.calculate_dot_product(v1, v2)
+    return calculate_dot_product(v1, v2)
 end
 
 return Unit

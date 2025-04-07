@@ -1,12 +1,11 @@
 local ClassPrototype = require("ClassPrototype")
-local R_Vector = {}
+local R_Vector = ClassPrototype:new()
+R_Vector.__index = R_Vector
 
 local ERROR_NOT_A_TABLE = "Table expected, got "
 local ERROR_NOT_A_REAL_NUMBER = "R_Vector must be filled with real numbers!"
 
-function R_Vector.new(t)
-    R_Vector.__index = R_Vector
-    setmetatable(R_Vector, {__index = ClassPrototype})
+function R_Vector:new(t)
 
     local content_type = type(t)
     if not (content_type == "table") then
@@ -19,11 +18,13 @@ function R_Vector.new(t)
         end
     end
 
-    local instance = ClassPrototype.new()
-        :set("is_R_Vector", true)
-        :set("dimension", #t)
-        :set("values", t)
-    return setmetatable(instance, R_Vector)
+    local instance = ClassPrototype:new()
+    :set("dimension", #t)
+    :set("values", t)
+
+    instance = setmetatable(instance, self)
+    instance.__index = self
+    return instance
 end
 
 function R_Vector:get_value(id)
@@ -34,11 +35,11 @@ function R_Vector:get_dimension()
     return self:get("dimension")
 end
 
-function R_Vector:is_vector()
+function R_Vector.is_vector()
     return true
 end
 
-function R_Vector:is_R_vector()
+function R_Vector.is_R_vector()
     return true
 end
 

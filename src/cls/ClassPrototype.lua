@@ -1,9 +1,11 @@
 local ClassPrototype = {}
+ClassPrototype.__index = ClassPrototype
 
-function ClassPrototype.new()
-    ClassPrototype.__index = ClassPrototype
+function ClassPrototype:new()
     local instance = {}
-    return setmetatable(instance, ClassPrototype)
+    setmetatable(instance, self)
+    self.__index = self
+    return instance
 end
 
 function ClassPrototype:get(member)
