@@ -6,5 +6,5 @@ At it's core, it works through 3 different parts represented by classes, that ca
 * Speaker: it uses hybrid text processing (autoregressive+autoencoding) to give the most natural and expected answer to the inserted input.
 * Middleman: it offers the API to receive external communication.
 
-##Bibliography
-*Speech and Language Processing (J. Daniel & M. James H.) 3rd ed. (2025)
+## Bibliography
+* Speech and Language Processing (J. Daniel & M. James H.) 3rd ed. (2025)
