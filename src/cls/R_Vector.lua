@@ -15,15 +15,31 @@ function R_Vector.new(t)
 
     for i = 1, #t do
         if not (type(t[i]) == "number") then
-            error(ERROR_NOT_REAL_NUMBER)
+            error(ERROR_NOT_A_REAL_NUMBER)
         end
     end
 
     local instance = ClassPrototype.new()
         :set("is_R_Vector", true)
-        :set("dimension", true)
+        :set("dimension", #t)
         :set("values", t)
     return setmetatable(instance, R_Vector)
+end
+
+function R_Vector:get_value(id)
+    return self:get("values")[id]
+end
+
+function R_Vector:get_dimension()
+    return self:get("dimension")
+end
+
+function R_Vector:is_vector()
+    return true
+end
+
+function R_Vector:is_R_vector()
+    return true
 end
 
 return R_Vector
