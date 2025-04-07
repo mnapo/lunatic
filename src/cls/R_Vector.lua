@@ -25,3 +25,5 @@ function R_Vector.new(t)
         :set("values", t)
     return setmetatable(instance, R_Vector)
 end
+
+return R_Vector
