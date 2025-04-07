@@ -5,3 +5,6 @@ At it's core, it works through 3 different parts represented by classes, that ca
 * Learner: it does the learning tasks. It digests the information given, and process it in a way that can be stored. It extracts meaningul data from different kind of text sources.
 * Speaker: it uses hybrid text processing (autoregressive+autoencoding) to give the most natural and expected answer to the inserted input.
 * Middleman: it offers the API to receive external communication.
+
+##Bibliography
+*Speech and Language Processing (J. Daniel & M. James H.) 3rd ed. (2025)
