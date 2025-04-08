@@ -1,9 +1,8 @@
 local ClassPrototype = require("ClassPrototype")
+local vector = require("vector")
 local Unit = ClassPrototype:new()
 Unit.__index = Unit
 
-local ERROR_NOT_R_VECTOR = "Error, it can only be calculated the dot product between two real numbers vectors"
-local ERROR_DIFFERENT_DIMENSIONS = "The dot product between two vectors can't be calculated if they're of different dimensions"
 local E = math.exp(1)
 
 local sigmoid = function(z)
@@ -20,23 +19,6 @@ local relu = function(z)
     else
         return 0
     end
-end
-
-local calculate_dot_product = function(v1, v2)
-    --if not (v1.is_R_Vector() and v2.is_R_Vector()) then
-    --    error(ERROR_NOT_R_VECTOR)
-    --end
-    local v1_dimension = v1:get_dimension()
-    print(v1_dimension)
-    if not (v1_dimension == v2:get_dimension()) then
-        error(ERROR_DIFFERENT_DIMENSIONS)
-    end
-    local dot_product = 0
-    for i = 1, v1_dimension do
-        local coordinates_product = v1:get_value(i) * v2:get_value(i)
-        dot_product = dot_product + coordinates_product
-    end
-    return dot_product
 end
 
 function Unit:new(network_id)
@@ -71,15 +53,26 @@ function Unit:set(member, value)
     return self
 end
 
-function Unit:get_output(x)
+function Unit.calculate_dot_product(v1, v2)
+    return vector.dot_product(v1, v2)
+end
+
+function Unit.calculate_vectorial_sum(v1, v2)
+    return vector.vectorial_sum(v1, v2)
+end
+
+function Unit:get_scalar_output(x)
     local weighted_input = x * self:get("weight")
     local biased_input = weighted_input + self:get("bias")
     local activated_input = self:get("activation_function")(biased_input)
     return activated_input
 end
 
-function Unit.calculate_dot_product(v1, v2)
-    return calculate_dot_product(v1, v2)
+function Unit:get_output(x)
+    local weighted_input = calculate_dot_product(x, self:get("weight"))
+    local biased_input = weighted_input + self:get("bias")
+    local activated_input = self:get("activation_function")(biased_input)
+    return activated_input
 end
 
 return Unit
