@@ -2,15 +2,17 @@ local unit = require("Unit")
 local vector = require("R_Vector")
 
 local M = {}
-M.u = unit:new()
 
-M.setup = function()
-    M.u:set("weight", {1, 1})
+M.u = unit:new()
+M.w = vector:new{1, 1}
+M.u:set("weight", M.w)
     :set("bias", -1)
-end
+    :set("activation_function", "perceptron")
 
 M.run = function(input)
-    return M.u:get_output(intput)
+    input = vector:new(input)
+    local result = M.u:get_output(input)
+    print(input:get_value(1).." AND "..input:get_value(2).." = "..result)
 end
 
 return M
