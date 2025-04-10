@@ -4,15 +4,17 @@ local ERROR_NOT_R_VECTOR = "Error, it can only be calculated the dot product/vec
 local ERROR_DIFFERENT_DIMENSIONS = "The dot product between two vectors can't be calculated if they're of different dimensions"
 local ERROR_CANT_OPERATE_BETWEEN = "Error, you can't operate between these objects"
 
-vector.is_R_vector = function(x)
+vector.is_R_Vector = function(x)
     if not (type(x) == "table") then
         return false
     end
-    return x["is_R_vector"] or false
+    return x["is_R_Vector"] or false
 end
 
 vector.can_operate_between = function(v1, v2)
-    if not (v1:is_R_Vector() and v2:is_R_Vector()) then
+    if not (vector.is_R_Vector(v1) and vector.is_R_Vector(v2)) then
+        print("V1:", v1, vector.is_R_Vector(v1))
+        print("V2:", v2, vector.is_R_Vector(v2))
         return false, ERROR_NOT_R_VECTOR
     end
     if not (v1:get_dimension() == v2:get_dimension()) then
@@ -22,7 +24,7 @@ vector.can_operate_between = function(v1, v2)
 end
 
 vector.dot_product = function(v1, v2)
-    local can_operate, err = can_operate_between(v1, v2)
+    local can_operate, err = vector.can_operate_between(v1, v2)
     if not can_operate then error(err) end
     local dot_product = 0
     for i = 1, v1:get_dimension() do
@@ -33,7 +35,7 @@ vector.dot_product = function(v1, v2)
 end
 
 vector.vectorial_sum = function(v1, v2)
-    local can_operate, err = can_operate_between(v1, v2)
+    local can_operate, err = vector.can_operate_between(v1, v2)
     if not can_operate then error(err) end
     local sum = 0
     for i = 1, v1:get_dimension() do
