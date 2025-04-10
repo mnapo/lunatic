@@ -11,9 +11,12 @@ do  --great discussion thread about paths (see Thadeu_de_Paula's comment). Will 
 end
 
 do --Let's do some testing
+    local vectorial_test = require("vector_operations")
     local and_test = require("and")
     local or_test = require("or")
 
+    vectorial_test.run()
+    
     and_test.run{1, 1}
     and_test.run{1, 0}
     and_test.run{0, 1}
