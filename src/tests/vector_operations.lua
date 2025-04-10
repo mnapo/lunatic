@@ -1,6 +1,7 @@
 unit = require("Unit")
 vector = require("R_Vector")
 
+
 local input = 1
 local u1 = unit:new(1)
     :set("activation_function", "sigmoid")
