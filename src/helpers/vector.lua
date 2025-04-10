@@ -13,8 +13,6 @@ end
 
 vector.can_operate_between = function(v1, v2)
     if not (vector.is_R_Vector(v1) and vector.is_R_Vector(v2)) then
-        print("V1:", v1, vector.is_R_Vector(v1))
-        print("V2:", v2, vector.is_R_Vector(v2))
         return false, ERROR_NOT_R_VECTOR
     end
     if not (v1:get_dimension() == v2:get_dimension()) then

@@ -12,8 +12,8 @@ end
 
 do --Let's do some testing
     local vectorial_test = require("vector_operations")
-    local and_test = require("and")
-    local or_test = require("or")
+    local and_test = require("and_perceptron")
+    local or_test = require("or_perceptron")
 
     vectorial_test.run()
     
