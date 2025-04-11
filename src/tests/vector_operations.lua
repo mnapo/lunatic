@@ -7,7 +7,7 @@ M.run = function()
     --[[local error_raiser_1 = vector:new("i'll cause trouble")
     local error_raiser_2 = vector:new{0, 1, 0.8, -5, "I'm causing trouble too!", -0.3}]]
     local v1 = r_vector:new{0.4, -3, -10, 150, -3000, 40.7}
-    print("Vector (0.4; -3; -10; 150; -3000; 40.7) - Values:")
+    print("Vector "..vector.tostring(v1).." | Values:")
     for i = 1, v1:get_dimension() do
         print("#"..i.." = "..v1:get_value(i))
     end
@@ -18,7 +18,9 @@ M.run = function()
     print(vector.dot_product(v1, v2))
     ]]
     local v3 = r_vector:new{121, 500.68, -19, -7, -0.006, 18}
-    print("Dot product between (0.4; -3; -10; 150; -3000; 40.7) and (121; 500.68; -19; -7; -0.006; 18) = "..vector.dot_product(v1, v3))
+    print("Dot product between "..vector.tostring(v1).." and "..vector.tostring(v3).." = "..vector.dot_product(v1, v3))
+    local v4 = r_vector:new{-12.1, 3, 44, -25}
+    print("Vectorial sum between "..vector.tostring(v2).." and "..vector.tostring(v4).." = "..vector.tostring(vector.vectorial_sum(v2, v4)))
 end
 
 return M
