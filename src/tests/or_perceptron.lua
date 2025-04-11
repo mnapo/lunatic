@@ -9,10 +9,10 @@ M.u:set("weight", M.w)
     :set("bias", 0)
     :set("activation_function", "perceptron")
 
-M.run = function(input)
-    input = vector:new(input)
+M.run = function(x1, x2)
+    local input = vector:new{x1, x2}
     local result = M.u:get_output(input)
-    print(input:get_value(1).." OR "..input:get_value(2).." = "..result)
+    print(x1.." OR "..x2.." = "..result)
 end
 
 return M
