@@ -74,4 +74,8 @@ vector.create_randomly = function(dimension)
     return r_vector:new(values)
 end
 
+vector.flatten = function(v)
+    return v:get_value(1)
+end
+
 return vector

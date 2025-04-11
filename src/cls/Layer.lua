@@ -1,21 +1,34 @@
 local ClassPrototype = require("ClassPrototype")
+--local vector = require("vector")
 local R_Vector = require("R_Vector")
 local Layer = ClassPrototype:new()
 Layer.__index = Layer
 
+local ERROR_INVALID_TYPE = "Layer type is wrong."
 local ERROR_NEXT_LAYER_UNDEFINED = "There isn't a next layer defined"
 local ERROR_NOT_UNIT = "Error, Unit expected. Got "
 
-function Layer:new(network, units, activation_function, type)
+local is_Unit = function(x)
+    if not (type(x) == "table") then
+        return false
+    end
+    return x["is_Unit"] or false
+end
+
+local is_Layer = function(x)
+    if not (type(x) == "table") then
+        return false
+    end
+    return x["is_Layer"] or false
+end
+
+function Layer:new(type)
     local instance = ClassPrototype:new()
 
-    local activation_function = activation_function or ""
-    local units = units or {}
     local type = type or "hidden"
+    local units = {}
 
-    instance:set("activation_function", activation_function)
-    :set("is_Unit", true)
-    :set("network", network)
+    instance:set("is_Layer", true)
     :set("type", type)
     :set("units", units)
 
@@ -39,23 +52,38 @@ function Layer:pop()
     return self
 end
 
-function Layer:get_output(input)
+function Layer:print()
     local units = self:get("units")
-    if self:get("type") == "output" then
-        local unit = units[#units]
-        return unit:get_output(input)
-    elseif (self:get("network"):get_layer(self:get("id")+1)) then
-        local network = self:get("network")
-        local next_layer = network:get_layer(id)
-        local next_layer_units = next_layer:get("units")
-        local values = {}
-        for i = 1, #units do
-            values[i] = units[i]:get_output(next_layer_units[i])
-        end
-        return R_Vector:new(values)
-    else
-        return ERROR_NEXT_LAYER_UNDEFINED
+    local name = self:get("name")
+    print("LAYER "..name)
+    for i = 1, #units do
+        local unit = units[i]
+        --local weight = vector.tostring(unit:get("weight"))
+        local bias = unit:get("bias")
+        print("UNIT "..name..i..": weight = "..weight..", bias = "..bias)
     end
+end
+
+function Layer:get_output(input)
+    local type = self:get("type")
+    local output
+    if type == "output" then
+        output = input --vector.flatten(input)
+    elseif type == "input" or type == "hidden" then
+        local next_layer = self:get("network"):get("layers")[self:get("id")+1]
+        if not (is_Layer(next_layer)) then
+            error(ERROR_NEXT_LAYER_UNDEFINED)
+        end
+        output = {}
+        local next_layer_units = next_layer:get("units")
+        for i = 1, #next_layer_units do
+            output[i] = next_layer_units[i]:get_output(input)
+        end
+        output = R_Vector:new(output)
+    else
+        error(ERROR_INVALID_TYPE)
+    end
+    return output
 end
 
 return Layer

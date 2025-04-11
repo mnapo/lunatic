@@ -72,7 +72,7 @@ function Unit:get_scalar_output(x)
 end
 
 function Unit:get_output(x)
-    local weighted_input = vector.calculate_dot_product(x, self:get("weight"))
+    local weighted_input = vector.dot_product(x, self:get("weight"))
     local biased_input = weighted_input + self:get("bias")
     local activated_input = self:get("activation_function")(biased_input)
     return activated_input
