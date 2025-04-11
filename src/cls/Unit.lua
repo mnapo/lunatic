@@ -1,5 +1,5 @@
 local ClassPrototype = require("ClassPrototype")
---local vector = require("vector") --see: CAUTION
+local vector = require("vector")
 local Unit = ClassPrototype:new()
 Unit.__index = Unit
 
@@ -64,15 +64,6 @@ function Unit:set(member, value)
     return self
 end
 
---[[CAUTION: these caused circular reference
-function Unit:calculate_dot_product(v)
-    return vector.dot_product(self, v)
-end
-
-function Unit:calculate_vectorial_sum(v)
-    return vector.vectorial_sum(self, v)
-end]]
-
 function Unit:get_scalar_output(x)
     local weighted_input = x * self:get("weight")
     local biased_input = weighted_input + self:get("bias")
@@ -81,7 +72,7 @@ function Unit:get_scalar_output(x)
 end
 
 function Unit:get_output(x)
-    local weighted_input = self.calculate_dot_product(x, self:get("weight"))
+    local weighted_input = vector.calculate_dot_product(x, self:get("weight"))
     local biased_input = weighted_input + self:get("bias")
     local activated_input = self:get("activation_function")(biased_input)
     return activated_input
