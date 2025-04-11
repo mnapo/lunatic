@@ -9,11 +9,9 @@ local ERROR_ACTIVATION_FUNCTION = "Error, the activation function doesn't exist"
 local sigmoid = function(z)
     return 1/(1+E^((-1)*z))
 end
-
 local tanh = function(z)
     return (E^z-E^((-1)*z))/(E^z+E^((-1)*z))
 end
-
 local relu = function(z)
     if z>0 then
         return z
@@ -21,7 +19,6 @@ local relu = function(z)
         return 0
     end
 end
-
 local perceptron = function(z)
     if z>0 then
         return 1
@@ -30,18 +27,19 @@ local perceptron = function(z)
     end
 end
 
-function Unit:new(network_id)
+function Unit:new(layer_id)
     local instance = ClassPrototype:new()
 
     local activation_function = ""
     local bias = 0
-    local parent_network_id = network_id or 0
+    local parent_layer_id = layer_id or 0
     local weight = 0
 
     instance:set("activation_function", activation_function)
     :set("bias", bias)
-    :set("parent_network_id", parent_network_id)
+    :set("parent_layer_id", parent_layer_id)
     :set("weight", weight)
+    :set("is_Unit", true)
 
     instance = setmetatable(instance, self)
     instance.__index = self
