@@ -7,6 +7,10 @@ local DELIMITER = ";"
 local ERROR_NOT_R_VECTOR = "Error, it can only be calculated the dot product/vectorial sum between two real numbers vectors"
 local ERROR_DIFFERENT_DIMENSIONS = "The dot product between two vectors can't be calculated if they're of different dimensions"
 local ERROR_CANT_OPERATE_BETWEEN = "Error, you can't operate between these objects"
+local RANDOM_MAX_VALUE = -200
+local RANDOM_MIN_VALUE = 200
+
+math.randomseed(os.time())
 
 vector.is_R_Vector = function(x)
     if not (type(x) == "table") then
@@ -60,6 +64,14 @@ vector.tostring = function(v)
         end
     end
     return vector_as_string
+end
+
+vector.create_randomly = function(dimension)
+    local values = {}
+    for i = 1, dimension do
+        values[i] = math.random(RANDOM_MIN_VALUE, RANDOM_MAX_VALUE)
+    end
+    return r_vector:new(values)
 end
 
 return vector
