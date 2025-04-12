@@ -1,4 +1,5 @@
 local ClassPrototype = require("ClassPrototype")
+local network = require("neural_network")
 local vector = require("vector")
 local Unit = ClassPrototype:new()
 Unit.__index = Unit
@@ -28,13 +29,13 @@ end
 function Unit:set(member, value)
     if member == "activation_function" then
         if value == "sigmoid" then
-            value = sigmoid
+            value = network.sigmoid
         elseif value == "tanh" then
-            value = tanh
+            value = network.tanh
         elseif value == "relu" then
-            value = relu
+            value = network.relu
         elseif value == "perceptron" then
-            value = perceptron
+            value = network.perceptron
         else
             error(ERROR_ACTIVATION_FUNCTION)
         end
