@@ -6,27 +6,6 @@ Unit.__index = Unit
 local E = math.exp(1)
 local ERROR_ACTIVATION_FUNCTION = "Error, the activation function doesn't exist"
 
-local sigmoid = function(z)
-    return 1/(1+E^((-1)*z))
-end
-local tanh = function(z)
-    return (E^z-E^((-1)*z))/(E^z+E^((-1)*z))
-end
-local relu = function(z)
-    if z>0 then
-        return z
-    else
-        return 0
-    end
-end
-local perceptron = function(z)
-    if z>0 then
-        return 1
-    else
-        return 0
-    end
-end
-
 function Unit:new(layer_id)
     local instance = ClassPrototype:new()
 
@@ -62,13 +41,6 @@ function Unit:set(member, value)
     end
     self[member] = value
     return self
-end
-
-function Unit:get_scalar_output(x)
-    local weighted_input = x * self:get("weight")
-    local biased_input = weighted_input + self:get("bias")
-    local activated_input = self:get("activation_function")(biased_input)
-    return activated_input
 end
 
 function Unit:get_output(x)

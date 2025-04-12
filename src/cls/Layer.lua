@@ -1,5 +1,4 @@
 local ClassPrototype = require("ClassPrototype")
---local vector = require("vector")
 local R_Vector = require("R_Vector")
 local Layer = ClassPrototype:new()
 Layer.__index = Layer
@@ -14,7 +13,6 @@ local is_Unit = function(x)
     end
     return x["is_Unit"] or false
 end
-
 local is_Layer = function(x)
     if not (type(x) == "table") then
         return false
@@ -68,7 +66,7 @@ function Layer:get_output(input)
     local type = self:get("type")
     local output
     if type == "output" then
-        output = input --vector.flatten(input)
+        output = input
     elseif type == "input" or type == "hidden" then
         local next_layer = self:get("network"):get("layers")[self:get("id")+1]
         if not (is_Layer(next_layer)) then
