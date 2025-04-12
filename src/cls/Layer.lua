@@ -35,6 +35,17 @@ function Layer:new(type)
     return instance
 end
 
+function Layer:set(member, value)
+    if member == "activation_function" then
+        local units = self:get("units")
+        for i = 1, #units do
+            units[i]:set("activation_function", value)
+        end
+    end
+    self[member] = value
+    return self
+end
+
 function Layer:push(u)
     if not (is_Unit(u)) then
         return false, ERROR_NOT_UNIT..type(u)

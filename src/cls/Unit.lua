@@ -7,17 +7,15 @@ Unit.__index = Unit
 local E = math.exp(1)
 local ERROR_ACTIVATION_FUNCTION = "Error, the activation function doesn't exist"
 
-function Unit:new(layer_id)
+function Unit:new(weight, bias)
     local instance = ClassPrototype:new()
 
     local activation_function = ""
-    local bias = 0
-    local parent_layer_id = layer_id or 0
-    local weight = 0
+    local bias = bias or 0
+    local weight = weight or 0
 
     instance:set("activation_function", activation_function)
     :set("bias", bias)
-    :set("parent_layer_id", parent_layer_id)
     :set("weight", weight)
     :set("is_Unit", true)
 
