@@ -12,7 +12,7 @@ M.o = unit:new(r_vector:new{1, -2}, 0)
 M.li = layer:new("input")
 M.lh = layer:new("hidden")
 :push(M.h1):push(M.h2)
-M.lo = layer:new("output")
+M.lo = layer:new("scalar_output")
 :push(M.o)
 
 M.n = network:new()

@@ -85,12 +85,17 @@ function NeuralNetwork:get_layer(id)
 end
 
 function NeuralNetwork:get_output(input)
+    local output
     local layers = self:get("layers")
     for i = 1, #layers do
         local layer = layers[i]
         input = layer:get_output(input)
     end
-    local output = vector.flatten(input)
+    if input[#input] == "scalar" then
+        output = vector.flatten(input)
+    else
+        output = input
+    end
     return output
 end
 

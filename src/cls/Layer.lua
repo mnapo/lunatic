@@ -78,6 +78,9 @@ function Layer:get_output(input)
     local output
     if type == "output" then
         output = input
+    elseif type == "scalar_output" then
+        output = input
+        output[#output+1] = "scalar"
     elseif type == "input" or type == "hidden" then
         local next_layer = self:get("network"):get("layers")[self:get("id")+1]
         if not (is_Layer(next_layer)) then
