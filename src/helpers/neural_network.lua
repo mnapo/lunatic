@@ -1,23 +1,23 @@
 local M = {}
 
-M.sigmoid = function(z)
-    return 1/(1+E^((-1)*z))
+M.sigmoid = function(x)
+    return 1/(1+E^((-1)*x))
 end
 
-M.tanh = function(z)
-    return (math.exp(z)-math.exp((-1)*z))/(math.exp(z)+math.exp((-1)*z))
+M.tanh = function(x)
+    return (math.exp(x)-math.exp((-1)*x))/(math.exp(x)+math.exp((-1)*x))
 end
 
-M.relu = function(z)
-    if z>0 then
-        return z
+M.relu = function(x)
+    if x>0 then
+        return x
     else
         return 0
     end
 end
 
-M.perceptron = function(z)
-    if z>0 then
+M.perceptron = function(x)
+    if x>0 then
         return 1
     else
         return 0

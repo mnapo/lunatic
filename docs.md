@@ -1,13 +1,20 @@
 ## module main
 By now it initializes classes, configures relative paths and does testing work.
 
+## module helpers/neural_network
+Activation functions (sigmoid, tanh, relu, perceptron)
+
+## module helpers/test_dispatcher
+Runner functions to be used in /tests modules
+
 ## module helpers/vector
 Gives helper functions for vector operations.
-* num: dot_product(R_Vector: v1, R_Vector: v2): calculates dot product between v1 and v2 if possible
-* R_Vector: vectorial_sum(R_Vector: v1, R_Vector: v2): calculates sum between v1 and v2, returns  
-* str: tostring(R_Vector: v): converts v to its string representation [x1; x2; ...]
-* R_Vector: create_randomly(num: dimension): creates an R_Vector the size of dimension and populates it with random values
-* num: flatten(R_Vector: v): retrieves the first value from v
+* num: dot_product(R_Vector: v1, R_Vector: v2) -> calculates dot product between v1 and v2 if possible
+* R_Vector: vectorial_sum(R_Vector: v1, R_Vector: v2) -> calculates sum between v1 and v2, returns  
+* str: tostring(R_Vector: v) -> converts v to its string representation [x1; x2; ...]
+* R_Vector: create_randomly(num: dimension) -> creates an R_Vector the size of dimension and populates it with random values
+* num: flatten(R_Vector: v) -> retrieves the first value from v
+* R_Vector: softmax(R_Vector: v) -> retrieves a softmaxed version of v
 
 ## module tests/and, tests/or, tests/xor
 Tests for perceptron type Units, that compute logical functions based on their inputs.
