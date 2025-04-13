@@ -4,7 +4,6 @@ local vector = require("vector")
 local Unit = ClassPrototype:new()
 Unit.__index = Unit
 
-local E = math.exp(1)
 local ERROR_ACTIVATION_FUNCTION = "Error, the activation function doesn't exist"
 
 function Unit:new(weight, bias)

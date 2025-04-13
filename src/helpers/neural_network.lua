@@ -5,7 +5,7 @@ M.sigmoid = function(z)
 end
 
 M.tanh = function(z)
-    return (E^z-E^((-1)*z))/(E^z+E^((-1)*z))
+    return (math.exp(z)-math.exp((-1)*z))/(math.exp(z)+math.exp((-1)*z))
 end
 
 M.relu = function(z)
