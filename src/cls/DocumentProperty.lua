@@ -1,6 +1,6 @@
 local ClassPrototype = require("ClassPrototype")
-local PropertyRecord = ClassPrototype:new()
-PropertyRecord.__index = PropertyRecord
+local DocumentProperty = ClassPrototype:new()
+DocumentProperty.__index = DocumentProperty
 
 local DOCUMENT_PROPERTY_TYPES = {
     "action",
@@ -19,7 +19,7 @@ local DOCUMENT_PROPERTY_ACTIONS = {
     "modification"
 }
 
-function PropertyRecord:new(parent_id, type, value)
+function DocumentProperty:new(parent_id, type, value)
     local instance = ClassPrototype:new()
 
     instance:set("parent_id", parent_id)
@@ -32,4 +32,4 @@ function PropertyRecord:new(parent_id, type, value)
     return instance
 end
 
-return PropertyRecord
+return DocumentProperty
