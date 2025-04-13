@@ -4,17 +4,13 @@ local vector = require("vector")
 local Unit = ClassPrototype:new()
 Unit.__index = Unit
 
-local ERROR_ACTIVATION_FUNCTION = "Error, the activation function doesn't exist"
-
 function Unit:new(weight, bias)
     local instance = ClassPrototype:new()
 
-    local activation_function = ""
     local bias = bias or 0
     local weight = weight or 0
 
-    instance:set("activation_function", activation_function)
-    :set("bias", bias)
+    instance:set("bias", bias)
     :set("weight", weight)
     :set("is_Unit", true)
 
@@ -25,17 +21,7 @@ end
 
 function Unit:set(member, value)
     if member == "activation_function" then
-        if value == "sigmoid" then
-            value = network.sigmoid
-        elseif value == "tanh" then
-            value = network.tanh
-        elseif value == "relu" then
-            value = network.relu
-        elseif value == "perceptron" then
-            value = network.perceptron
-        else
-            error(ERROR_ACTIVATION_FUNCTION)
-        end
+        value = network.get_activation_function(value)
     end
     self[member] = value
     return self
