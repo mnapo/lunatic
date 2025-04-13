@@ -12,5 +12,9 @@ end
 
 do --Let's do some testing
     local tests = require("tests")
+    tests.register("networks")
+    tests.register("vectorial")
     tests.run()
 end
+
+while true do end

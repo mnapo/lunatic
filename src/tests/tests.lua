@@ -1,30 +1,38 @@
 local M = {}
-local SEPARATOR = "----------------------------------------------------------------------"
+M.dispatcher = require("test_dispatcher")
 
-M.run = function()
-    local vectorial_test = require("vector_operations")
-    local and_test = require("and_perceptron")
-    local or_test = require("or_perceptron")
-    local xor_test = require("xor_network")
-    print(SEPARATOR)
-    print("Vectorial tests")
-    print(SEPARATOR)
-    vectorial_test.run()
-    print(SEPARATOR)
-    print("Neural Networks tests")
-    print(SEPARATOR)
-    and_test.run(1, 1)
-    and_test.run(1, 0)
-    and_test.run(0, 1)
-    and_test.run(0, 0)
-    or_test.run(1, 1)
-    or_test.run(1, 0)
-    or_test.run(0, 1)
-    or_test.run(0, 0)
-    xor_test.run(1, 1)
-    xor_test.run(1, 0)
-    xor_test.run(0, 1)
-    xor_test.run(0, 0)
+M.TESTS = {
+    networks = {M.dispatcher.run_networks, "Neuronal Networks"},
+    vectorial = {M.dispatcher.run_vectorial, "Vectorial"}
+}
+
+M.SEPARATOR = "----------------------------------------------------------------------"
+
+M.print_tests_name = function(id)
+    print(M.SEPARATOR)
+    print(M.TESTS[id][2].." tests")
+    print(M.SEPARATOR)
+end
+
+M.registered = {}
+M.register = function(key)
+    M.registered[#M.registered+1] = key
+end
+M.register_all = function()
+    for k in pairs(M.TESTS) do
+        M.register(k)
+    end
+end
+
+M.run = function(tests_to_run)
+    if tests_to_run == "all" or tests_to_run == nil then
+        tests_to_run = M.registered
+    end
+    for i = 1, #tests_to_run do
+        local tests_id = tests_to_run[i]
+        M.print_tests_name(tests_id)
+        M.TESTS[tests_id][1]()
+    end
 end
 
 return M
