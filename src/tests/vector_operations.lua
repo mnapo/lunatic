@@ -20,6 +20,9 @@ M.run = function()
     print("Dot product between "..vector.tostring(v1).." and "..vector.tostring(v3).." = "..vector.dot_product(v1, v3))
     local v4 = vector.create_randomly(4)
     print("Vectorial sum between "..vector.tostring(v2).." and "..vector.tostring(v4).." = "..vector.tostring(vector.vectorial_sum(v2, v4)))
+    local v5 = vector.create_randomly(6)
+    print("Vector "..vector.tostring(v5).." normalized (softmax):")
+    print(vector.tostring(vector.softmax(v5)))
 end
 
 return M

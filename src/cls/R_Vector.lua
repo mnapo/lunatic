@@ -27,6 +27,12 @@ function R_Vector:new(t)
     return instance
 end
 
+function R_Vector:set_value(id, value)
+    local values = self:get("values")
+    values[id] = value
+    return self
+end
+
 function R_Vector:get_value(id)
     return self:get("values")[id]
 end
