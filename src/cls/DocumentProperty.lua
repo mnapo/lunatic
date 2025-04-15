@@ -3,7 +3,6 @@ local DocumentProperty = ClassPrototype:new()
 DocumentProperty.__index = DocumentProperty
 
 local DOCUMENT_PROPERTY_TYPES = {
-    "action",
     "annotations",
     "code_switching",
     "collection_process",
@@ -14,18 +13,21 @@ local DOCUMENT_PROPERTY_TYPES = {
     "motivation",
     "situation"
 }
+
 local DOCUMENT_PROPERTY_ACTIONS = {
     "creation",
     "modification"
 }
 
-function DocumentProperty:new(parent_id, type, value)
+function DocumentProperty:new(type, value, action)
     local instance = ClassPrototype:new()
 
-    instance:set("parent_id", parent_id)
-    :set("date", os.date())
+    local action = action or "creation"
+
+    instance:set("date", os.date())
     :set("type", type)
     :set("value", value)
+    :set("action", "creation")
 
     instance = setmetatable(instance, self)
     instance.__index = self
