@@ -27,13 +27,13 @@ M.perceptron = function(x)
 end
 
 M.get_activation_function = function(function_name)
-    if value == "sigmoid" then
+    if function_name == "sigmoid" then
         return M.sigmoid
-    elseif value == "tanh" then
+    elseif function_name == "tanh" then
         return M.tanh
-    elseif value == "relu" then
+    elseif function_name == "relu" then
         return M.relu
-    elseif value == "perceptron" then
+    elseif function_name == "perceptron" then
         return M.perceptron
     else
         error(ERROR_ACTIVATION_FUNCTION)
