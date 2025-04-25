@@ -3,10 +3,22 @@ local DocumentProperty = require("DocumentProperty")
 local Document = ClassPrototype:new()
 Document.__index = Document
 
-function Document:new(source)
+local DOCUMENT_DEFAULT_NAME = "Unnamed Document"
+local DOCUMENT_TYPES = {
+    "string",
+    "html",
+    "pdf",
+    "txt",
+    "web"
+}
+function Document:new(type, source, name)
     local instance = ClassPrototype:new()
 
+    local name = name or DOCUMENT_DEFAULT_NAME
+    local type = type or DOCUMENT_TYPES[1]
+
     instance:set("source", source)
+    :set("type", type)
     :set("properties", {})
 
     instance = setmetatable(instance, self)
