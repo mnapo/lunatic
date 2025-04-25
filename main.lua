@@ -7,7 +7,7 @@ do  --great discussion thread about paths (see Thadeu_de_Paula's comment). Will 
     end
     addRelPath("src/cls")
     addRelPath("src/helpers")
-    addRelPath("src/tests")
+    addRelPath("tests")
 end
 
 do --Let's do some testing
