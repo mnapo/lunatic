@@ -1,13 +1,17 @@
-## module main
+# Modules (./src)
+
+## main
 By now it initializes classes, configures relative paths and does testing work.
 
-## module helpers/neural_network
+## src/helpers/
+
+### neural_network
 Activation functions (sigmoid, tanh, relu, perceptron)
 
-## module helpers/test_dispatcher
+### test_dispatcher
 Runner functions to be used in /tests modules
 
-## module helpers/vector
+### vector
 Gives helper functions for vector operations.
 * num: dot_product(R_Vector: v1, R_Vector: v2) -> calculates dot product between v1 and v2 if possible
 * R_Vector: vectorial_sum(R_Vector: v1, R_Vector: v2) -> calculates sum between v1 and v2, returns  
@@ -16,20 +20,25 @@ Gives helper functions for vector operations.
 * num: flatten(R_Vector: v) -> retrieves the first value from v
 * R_Vector: softmax(R_Vector: v) -> retrieves a softmaxed version of v
 
-## module tests/and, tests/or, tests/xor
+## src/tests/
+### and, or
 Tests for perceptron type Units, that compute logical functions based on their inputs.
 
-## module tests/vector_operations
+### xor
+Uses a neural network which units have predefined weights and biases to compute XOR logical function
+
+### vector_operations
 Shows how R_Vector class works (dot product, vectorial sum, tostring).
 
-## class ClassPrototype
+# Classes (./src/cls)
+### ClassPrototype
 Base class for all the rest.
 * ClassPrototype: new() -> creates instance
 * any: get(str: member) -> retrieves a member's value
 * ClassPrototype: set(str: member, any: value) -> gives a new value to a member
 * remove() -> destroys the instance
 
-## class Unit
+### Unit
 Inherits ClassPrototype.
 It represents a Cell in a NeuralNetwork.
 * Unit: set(str: member, any: value) -> overriden to check if the member being set is activation_function
@@ -38,14 +47,14 @@ It represents a Cell in a NeuralNetwork.
 * R_Vector/num: weight -> scalar or vector that's multiplied with the input
 * num: bias -> scalar that's added to the result of input * weight
 
-## class Layer
+### Layer
 Inherits ClassPrototype
 * Layer: push(Unit u) -> adds u to the end of units
 * Layer: pop() -> removes the last unit in units
 * R_Vector: get_output(R_Vector: input) -> retrieves a vector where its values are the result of the dot producto between input and the layer's units
 * table: units -> units appended to the layer
 
-## class NeuralNetwork
+### NeuralNetwork
 Inherits ClassPrototype
 * NeuralNetwork: push(Layer l) -> adds l to the end of layers
 * Layer: pop() -> removes the last layer in layers
