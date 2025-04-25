@@ -2,6 +2,7 @@ local M = {}
 M.dispatcher = require("test_dispatcher")
 
 M.TESTS = {
+    documents = {M.dispatcher.run_documents, "Document Parsing"},
     networks = {M.dispatcher.run_networks, "Neuronal Networks"},
     vectorial = {M.dispatcher.run_vectorial, "Vectorial"}
 }
