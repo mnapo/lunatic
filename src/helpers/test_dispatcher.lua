@@ -23,4 +23,9 @@ M.run_networks = function()
     xor_test.run(0, 0)
 end
 
+M.run_documents = function()
+    local documents = require("document_parsing")
+    documents.run()
+end
+
 return M
