@@ -12,8 +12,9 @@ end
 
 do --Let's do some testing
     local tests = require("tests")
-    tests.register("networks")
     tests.register("vectorial")
+    tests.register("networks")
+    tests.register("documents")
     tests.run()
 end
 
