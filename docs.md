@@ -1,7 +1,7 @@
 # Modules (./src)
 
 ## main
-By now it initializes classes, configures relative paths and does testing work.
+By now it initializes classes, configures relative paths and does testing work
 
 ## src/helpers/
 
@@ -12,7 +12,7 @@ Activation functions (sigmoid, tanh, relu, perceptron)
 Runner functions to be used in /tests modules
 
 ### vector
-Gives helper functions for vector operations.
+Gives helper functions for vector operations
 * num: dot_product(R_Vector: v1, R_Vector: v2) -> calculates dot product between v1 and v2 if possible
 * R_Vector: vectorial_sum(R_Vector: v1, R_Vector: v2) -> calculates sum between v1 and v2, returns  
 * str: tostring(R_Vector: v) -> converts v to its string representation [x1; x2; ...]
@@ -20,27 +20,24 @@ Gives helper functions for vector operations.
 * num: flatten(R_Vector: v) -> retrieves the first value from v
 * R_Vector: softmax(R_Vector: v) -> retrieves a softmaxed version of v
 
-## src/tests/
-### and, or
-Tests for perceptron type Units, that compute logical functions based on their inputs.
+### token
+Gives helper functions for Vocabulary generation
 
-### xor
-Uses a neural network which units have predefined weights and biases to compute XOR logical function
+### file
+Gives helper functions for file reading
 
-### vector_operations
-Shows how R_Vector class works (dot product, vectorial sum, tostring).
 
-# Classes (./src/cls)
+# Classes (./src/cls/)
 ### ClassPrototype
-Base class for all the rest.
+Base class for all the rest
 * ClassPrototype: new() -> creates instance
 * any: get(str: member) -> retrieves a member's value
 * ClassPrototype: set(str: member, any: value) -> gives a new value to a member
 * remove() -> destroys the instance
 
 ### Unit
-Inherits ClassPrototype.
-It represents a Cell in a NeuralNetwork.
+Inherits ClassPrototype
+It represents a Cell in a NeuralNetwork
 * Unit: set(str: member, any: value) -> overriden to check if the member being set is activation_function
 * num: calculate_output(R_Vector input) -> multiplies input with weight, adds bias to the result and finally applies the activation_function to the sum of both
 * num: parent_network_id -> the id of the neural network where it's going to work.
@@ -60,3 +57,23 @@ Inherits ClassPrototype
 * Layer: pop() -> removes the last layer in layers
 * num: get_output(R_Vector: input) -> retrieves the scalar that results from the dot product between the last hidden layer and the output one
 * table: layers -> layers appended to the network
+
+### Document
+Inherits ClassPrototype
+
+### DocumentProperty
+Inherits ClassPrototype
+
+### Vocabulary
+Inherits ClassPrototype
+
+
+## Tests (./tests/)
+### and, or
+Tests for perceptron type Units, that compute logical functions based on their inputs
+
+### xor
+Uses a neural network which units have predefined weights and biases to compute XOR logical function
+
+### vector_operations
+Shows how R_Vector class works (dot product, vectorial sum, tostring)
