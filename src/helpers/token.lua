@@ -4,12 +4,23 @@ M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.SEPARATOR = "%s"
 M.gmatch = string.gmatch
+M.lower = string.lower
 M.VOCABULARIES_COUNT = 0
 
+M.indexate = function(t, l)
+
+end
 M.to_words = function(source)
     local temp = {}
     for word in M.gmatch(source, M.CAPTURE_PATTERN_START..M.SEPARATOR..M.CAPTURE_PATTERN_END) do
-        temp[#temp+1] = word
+        word = M.lower(word)
+        if temp[word] == nil then
+            temp[word] = true
+        end
+    end
+    for k in pairs(temp) do
+        temp[#temp+1] = k
+        temp[k] = nil
     end
     return temp
 end
