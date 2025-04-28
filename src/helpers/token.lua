@@ -16,7 +16,7 @@ M.to_words = function(source)
             temp[word] = true
         end
     end
-    for k in pairs(temp) do
+    for word, _ in pairs(temp) do
         temp[#temp+1] = k
         temp[k] = nil
     end
@@ -25,7 +25,6 @@ end
 
 M.to_subwords = function(source)
     local temp = M.to_words(source)
-    
 end
 
 M.TOKENIZATION_METHODS = {
@@ -35,7 +34,7 @@ M.TOKENIZATION_METHODS = {
 
 M.induce = function(source, method, name)
     local granularity_level = method
-    if M.TOKENIZATION_METHODS[method] ~= nil then
+    if M.TOKENIZATION_METHODS[method] then
         method = M.TOKENIZATION_METHODS[method]
     else
         return error(M.ERROR_METHOD)

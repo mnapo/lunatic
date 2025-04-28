@@ -20,8 +20,8 @@ M.register = function(key)
     M.registered[#M.registered+1] = key
 end
 M.register_all = function()
-    for k in pairs(M.TESTS) do
-        M.register(k)
+    for test, _ in pairs(M.TESTS) do
+        M.register(test)
     end
 end
 
