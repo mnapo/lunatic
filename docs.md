@@ -2,13 +2,13 @@
 Up to date lua community doesn't have conventional directory structure, so it may vary from a project to another. This library is intended to be embedded in different kind of works, and namespace pollution is something we must avoid. To reduce coding time in development environment, we take no mesure to do it.
 As we use really common names, you would like to take a little time to understand how the whole library is required.
 
-    - the only module that needs to be required is main.lua, so you would do something alike: `lunatic = require("lunatic.main")`, depending on your package.path
-    - main.lua implements addRelPath(), which registers every lunatic's directory in package.path
-    - registering a directory here means that any .lua file inside it can be required without specifying it's path. So for example "./src/helpers/neural_network.lua" is required in "./src/cls/NeuralNetwork" this way: `local vector = require("vector")`
+- the only module that needs to be required is main.lua, so you would do something alike: `lunatic = require("lunatic.main")`, depending on your package.path
+- main.lua implements addRelPath(), which registers every lunatic's directory in package.path
+- registering a directory here means that any .lua file inside it can be required without specifying it's path. So for example "./src/helpers/neural_network.lua" is required in "./src/cls/NeuralNetwork" this way: `local vector = require("vector")`
 
 So if you don't work this way, in order to embedded lunatic, you can proceed in two ways:
-    - either you remove `addRelPath()` and every call to it to register lunatic's directories, and then modify the `require()` calls in every module
-    - or you can make your code compatible with our directory structure, by moving main.lua to your app's root, registering your directories and lunatic's, and avoiding using the same names.
+- either you remove `addRelPath()` and every call to it to register lunatic's directories, and then modify the `require()` calls in every module
+- or you can make your code compatible with our directory structure, by moving main.lua to your app's root, registering your directories and lunatic's, and avoiding using the same names.
 
 We hope normalizing this in the future so you can import the library without boilerplate. By now we think it's good practice to don't mention paths in require() because they can be changed frequently in this phase.
 
@@ -82,7 +82,7 @@ Inherits ClassPrototype
 Inherits ClassPrototype
 
 
-## Tests (./tests/)
+# Tests (./tests/)
 ### and, or
 Tests for perceptron type Units, that compute logical functions based on their inputs
 
