@@ -11,6 +11,7 @@ local DOCUMENT_TYPES = {
     "txt",
     "web"
 }
+
 function Document:new(type, source, name)
     local instance = ClassPrototype:new()
 

@@ -17,8 +17,8 @@ M.to_words = function(source)
         end
     end
     for word, _ in pairs(temp) do
-        temp[#temp+1] = k
-        temp[k] = nil
+        temp[#temp+1] = word
+        temp[word] = nil
     end
     return temp
 end

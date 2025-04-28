@@ -6,7 +6,7 @@ M.TESTS = {
     networks = {M.dispatcher.run_networks, "Neuronal Networks"},
     vectorial = {M.dispatcher.run_vectorial, "Vectorial"}
 }
-
+M.registered = {}
 M.SEPARATOR = "----------------------------------------------------------------------"
 
 M.print_tests_name = function(id)
@@ -15,10 +15,10 @@ M.print_tests_name = function(id)
     print(M.SEPARATOR)
 end
 
-M.registered = {}
 M.register = function(key)
     M.registered[#M.registered+1] = key
 end
+
 M.register_all = function()
     for test, _ in pairs(M.TESTS) do
         M.register(test)

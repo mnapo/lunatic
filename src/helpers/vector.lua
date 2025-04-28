@@ -9,8 +9,7 @@ local ERROR_DIFFERENT_DIMENSIONS = "The dot product between two vectors can't be
 local ERROR_CANT_OPERATE_BETWEEN = "Error, you can't operate between these objects"
 local RANDOM_MAX_VALUE = -200
 local RANDOM_MIN_VALUE = 200
-
-math.randomseed(os.time())
+local RANDOMSEED_RESPONSE = math.randomseed(os.time())
 
 vector.is_R_Vector = function(x)
     if not (type(x) == "table") then
