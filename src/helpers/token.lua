@@ -28,13 +28,13 @@ M.to_subwords = function(source)
 end
 
 M.TOKENIZATION_METHODS = {
-    to_words = M.to_words,
-    to_subwords = M.to_subwords
+    words = M.to_words,
+    subwords = M.to_subwords
 }
 
 M.induce = function(source, method, name)
     local granularity_level = method
-    if M.TOKENIZATION_METHODS[method] then
+    if M.TOKENIZATION_METHODS[method] ~= nil then
         method = M.TOKENIZATION_METHODS[method]
     else
         return error(M.ERROR_METHOD)
