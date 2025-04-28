@@ -2,14 +2,12 @@ local M = {}
 
 M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
+M.ERROR_METHOD = "Invalid method"
 M.SEPARATOR = "%s"
+M.VOCABULARIES_COUNT = 0
 M.gmatch = string.gmatch
 M.lower = string.lower
-M.VOCABULARIES_COUNT = 0
 
-M.indexate = function(t, l)
-
-end
 M.to_words = function(source)
     local temp = {}
     for word in M.gmatch(source, M.CAPTURE_PATTERN_START..M.SEPARATOR..M.CAPTURE_PATTERN_END) do
@@ -24,7 +22,10 @@ M.to_words = function(source)
     end
     return temp
 end
+
 M.to_subwords = function(source)
+    local temp = M.to_words(source)
+    
 end
 
 M.TOKENIZATION_METHODS = {
@@ -34,10 +35,10 @@ M.TOKENIZATION_METHODS = {
 
 M.induce = function(source, method, name)
     local granularity_level = method
-    if method == "words" then
-        method = M.TOKENIZATION_METHODS.to_words
-    elseif method == "subwords" then
-        method = M.TOKENIZATION_METHODS.to_subwords
+    if M.TOKENIZATION_METHODS[method] ~= nil then
+        method = M.TOKENIZATION_METHODS[method]
+    else
+        return error(M.ERROR_METHOD)
     end
     M.VOCABULARIES_COUNT = M.VOCABULARIES_COUNT + 1
     local name = name or "#"..M.VOCABULARIES_COUNT
