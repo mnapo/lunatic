@@ -26,7 +26,7 @@ function Vocabulary:print()
     print(self:get("name").." Vocabulary")
     print("\tGranularity level: "..self:get("granularity"))
     for i = 1, #tokens do
-        print("\tToken #"..i..": "..tokens[i])
+        print('\tToken #'..i..': "'..tokens[i]..'"')
     end
 end
 

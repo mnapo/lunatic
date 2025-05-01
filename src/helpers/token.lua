@@ -3,28 +3,39 @@ local M = {}
 M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.ERROR_METHOD = "Invalid method"
-M.SEPARATOR = "%s"
+M.MAX_SUBWORDS_LEARNING = 10
 M.VOCABULARIES_COUNT = 0
+M.WHITE_SPACE = "%s"
 M.gmatch = string.gmatch
 M.lower = string.lower
 
-M.to_words = function(source)
+M.tokenize = function(source, count_apparitions, delimiter)
     local temp = {}
-    for word in M.gmatch(source, M.CAPTURE_PATTERN_START..M.SEPARATOR..M.CAPTURE_PATTERN_END) do
+    for word in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
         word = M.lower(word)
         if temp[word] == nil then
             temp[word] = true
         end
     end
-    for word, _ in pairs(temp) do
-        temp[#temp+1] = word
-        temp[word] = nil
+    if count_apparitions then
+        for word, _ in pairs(temp) do
+            temp[#temp+1] = word
+            temp[word] = nil
+        end
     end
     return temp
 end
 
+M.to_words = function(source, delimiter)
+    return M.tokenize(source, false, M.WHITE_SPACE)
+end
+
+M.bytepair_encoding = function(source, max)
+
+end
+
 M.to_subwords = function(source)
-    local temp = M.to_words(source)
+    return M.bytepair_encoding(source, M.MAX_SUBWORDS_LEARNING)
 end
 
 M.TOKENIZATION_METHODS = {
@@ -34,7 +45,7 @@ M.TOKENIZATION_METHODS = {
 
 M.induce = function(source, method, name)
     local granularity_level = method
-    if M.TOKENIZATION_METHODS[method] ~= nil then
+    if M.TOKENIZATION_METHODS[method] then
         method = M.TOKENIZATION_METHODS[method]
     else
         return error(M.ERROR_METHOD)
