@@ -9,25 +9,25 @@ M.WHITE_SPACE = "%s"
 M.gmatch = string.gmatch
 M.lower = string.lower
 
-M.tokenize = function(source, count_apparitions, delimiter)
+M.tokenize = function(source, delimiter)
     local temp = {}
-    for word in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
-        word = M.lower(word)
-        if temp[word] == nil then
-            temp[word] = true
+    for morpheme in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
+        morpheme = M.lower(morpheme)
+        if temp[morpheme] == nil then
+            temp[morpheme] = 1
+        else
+            temp[morpheme] = temp[morpheme] + 1
         end
     end
-    if count_apparitions then
-        for word, _ in pairs(temp) do
-            temp[#temp+1] = word
-            temp[word] = nil
-        end
+    for morpheme, frequency in pairs(temp) do
+        temp[#temp+1] = {morpheme=morpheme, frequency=frequency}
+        temp[morpheme] = nil
     end
     return temp
 end
 
 M.to_words = function(source, delimiter)
-    return M.tokenize(source, false, M.WHITE_SPACE)
+    return M.tokenize(source, M.WHITE_SPACE)
 end
 
 M.bytepair_encoding = function(source, max)
