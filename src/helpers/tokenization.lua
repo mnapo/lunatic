@@ -1,6 +1,6 @@
 local M = {}
-local token = reqyure
-local token_list = require("token_list")
+local token = require("Token")
+local token_list = require("TokenList")
 
 M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"

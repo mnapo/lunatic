@@ -1,4 +1,4 @@
-local token = require("token")
+local token = require("tokenization")
 local vocabulary = require("Vocabulary")
 
 local M = {}

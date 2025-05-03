@@ -4,12 +4,12 @@ TokenList.__index = TokenList
 local ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 local MIN_TOKENS = 2
 
-function TokenList:new(morpheme)
+function TokenList:new(tokens)
     local instance = ClassPrototype:new()
 
-    local morpheme = morpheme or ""
+    local tokens = tokens or {}
 
-    instance:set("tokens", {})
+    instance:set("tokens", tokens)
 
     instance = setmetatable(instance, self)
     instance.__index = self
@@ -33,6 +33,16 @@ function TokenList:get_tokens()
     return self:get("tokens")
 end
 
+function TokenList:exists(morpheme)
+    local tokens = self:get_tokens()
+    for i = 1, #tokens do
+        if tokens[i]:get_morpheme() == morpheme then
+            return true
+        end
+    end
+    return false
+end
+
 function TokenList:count()
     return #self:get_tokens()
 end
@@ -52,7 +62,7 @@ function TokenList:print()
 end
 
 function TokenList:sort_by_frequency(descending)
-    local tokens = self:get("tokens")
+    local tokens = self:get_tokens()
     if #tokens<MIN_TOKENS then
         return error(ERROR_INSUFFICIENT_TOKENS)
     end
