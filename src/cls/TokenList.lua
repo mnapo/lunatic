@@ -29,8 +29,12 @@ function TokenList:add_token(morpheme, frequency)
     return self
 end
 
+function TokenList:get_tokens()
+    return self:get("tokens")
+end
+
 function TokenList:count()
-    return #self:get("tokens")
+    return #self:get_tokens()
 end
 
 function TokenList:get_token_id_by_morpheme(morpheme)
@@ -40,7 +44,11 @@ function TokenList:remove_token_by_morpheme(morpheme)
 end
 
 function TokenList:print()
-    print(self:get("morpheme"))
+    local tokens = self:get_tokens()
+    for i = 1, #tokens do
+        local token = tokens[i]
+        token:print()
+    end
 end
 
 function TokenList:sort_by_frequency(descending)
