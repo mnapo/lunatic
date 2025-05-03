@@ -4,11 +4,12 @@ M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 M.ERROR_METHOD = "Invalid method"
-M.ERROR_TO_BE_REPORTED = 'Internal Lua "error" or really strange behaviour is happening. We are going to see what is going on next time'
-M.MAX_SUBWORDS_LEARNING = 10
+M.ERROR_TO_BE_REPORTED = 'Internal Lua "error" or really strange behaviour is happening. We are going to inspect what is going on soon'
+M.MAX_SUBWORDS_LEARNING = 30
 M.MIN_TOKENS = 2
-M.MORPHEME_KEY_ID = "char-"
-M.TOKENS_THRESHOLD = 4
+M.MORPHEME_CHAR_KEY_ID = "char-"
+M.MORPHEME_WORD_KEY_ID = "word-"
+M.TOKENS_THRESHOLD = 10
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
 M.VOCABULARIES_COUNT = 0
@@ -18,18 +19,72 @@ M.len = string.len
 M.lower = string.lower
 M.sub = string.sub
 
-M.tokenize_by_pairs = function(tokens)
-    local temp = M.tokenize_by_characters(tokens)
+M.sanitize = function(tokens, granularity)
+    local temp = {}
+    local key = M.MORPHEME_CHAR_KEY_ID
+    if granularity == "words" then
+        key = M.MORPHEME_WORD_KEY_ID
+    end
+    local key_length = M.len(key)
+    for i = 1, #tokens do
+        if tokens[i] then
+            if tokens[i].morpheme then
+                if tokens[i].frequency then
+                    if (tonumber(tokens[i].frequency) and M.sub(tokens[i].morpheme, 1, key_length)==key) then
+                        print(tokens[i].morpheme, tokens[i].frequency)
+                        temp[#temp+1] = tokens[i]
+                    end
+                end
+            end
+        end
+    end
+    return temp
 end
 
-M.tokenize_by_characters = function(tokens)
+M.merge = function(vocabulary_1, vocabulary_2)
+    local temp = vocabulary_1
+    for i = 1, #vocabulary_2 do
+        temp[#vocabulary_1+1] = vocabulary_2[i]
+    end
+    return temp
+end
+
+M.sort_by_frequency = function(tokens, descending)
+    if #tokens<M.MIN_TOKENS then
+        return error(M.ERROR_INSUFFICIENT_TOKENS)
+    end
+    local compare_frequencies = function(token_1, token_2)
+        --if (tonumber(token_1.frequency)==nil or tonumber(token_2.frequency)==nil) then
+        --    print(M.ERROR_TO_BE_REPORTED)
+        --    return false
+        --end
+        if descending then
+            return token_1.frequency > token_2.frequency
+        else
+            return token_1.frequency < token_2.frequency
+        end
+    end
+    table.sort(tokens, compare_frequencies)
+end
+
+M.trim_less_frequent = function(tokens)
+    if #tokens > M.TOKENS_THRESHOLD then
+        for i = M.TOKENS_THRESHOLD+1, #tokens do
+            tokens[i] = nil
+        end
+    end
+end
+
+M.tokenize_by_characters = function(tokens, quantity)
     local temp = {}
+    local quantity = quantity or 1
+    quantity = quantity-1
     for i = 1, #tokens do
         local morpheme = tokens[i].morpheme
         local length = M.len(morpheme)
-        for j = 1, length do
-            local character = M.sub(morpheme, j, j)
-            local key = M.MORPHEME_KEY_ID..character
+        for j = 1, length-quantity do
+            local character = M.sub(morpheme, j, j+quantity)
+            local key = M.MORPHEME_CHAR_KEY_ID..character
             if temp[key] == nil then
                 temp[key] = 1
             else
@@ -49,14 +104,19 @@ M.tokenize_by_characters = function(tokens)
     return temp
 end
 
+M.tokenize_by_pairs = function(tokens)
+    return M.tokenize_by_characters(tokens, 2)
+end
+
 M.tokenize_by_delimiter = function(source, delimiter)
     local temp = {}
     for morpheme in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
-        morpheme = M.lower(morpheme)
-        if temp[morpheme] == nil then
-            temp[morpheme] = 1
+        local morpheme = M.lower(morpheme)
+        local key = M.MORPHEME_WORD_KEY_ID..morpheme
+        if temp[key] == nil then
+            temp[key] = 1
         else
-            temp[morpheme] = temp[morpheme] + 1
+            temp[key] = temp[key] + 1
         end
     end
     for morpheme, frequency in pairs(temp) do
@@ -68,6 +128,7 @@ end
 
 M.to_words = function(source, add_tracing_space)
     local temp = M.tokenize_by_delimiter(source, M.WHITE_SPACE)
+    temp = M.sanitize(temp, "words")
     if add_tracing_space then
         for i = 1, #temp do
             if (M.len(temp[i].morpheme)%2==0) then
@@ -80,34 +141,29 @@ M.to_words = function(source, add_tracing_space)
     return temp
 end
 
-M.sort_by_frequency = function(tokens, descending)
-    if #tokens<M.MIN_TOKENS then
-        return error(M.ERROR_INSUFFICIENT_TOKENS)
-    end
-    local compare_frequencies = function(token_1, token_2)
-        if descending then
-            return token_1.frequency > token_2.frequency
-        else
-            return token_1.frequency < token_2.frequency
-        end
-    end
-    table.sort(tokens, compare_frequencies)
-end
-
-M.trim_less_frequent = function(tokens)
-    for i = M.TOKENS_THRESHOLD+1, #tokens do
-        tokens[i] = nil
-    end
-end
-
 M.split_with_tracing_space = function(source)
     local temp = M.to_words(source, true)
+    return temp
 end
 
 M.bytepair_encoding = function(source)
-    local tokens = M.to_words(source, true)
-    tokens = M.tokenize_by_characters(tokens)
-    return tokens
+    local initial_vocabulary = M.split_with_tracing_space(source)
+
+    --[[M.sort_by_frequency(initial_vocabulary)
+    M.trim_less_frequent(initial_vocabulary)
+    local individual_characters = M.tokenize_by_characters(initial_vocabulary)
+    M.sort_by_frequency(individual_characters)
+    M.trim_less_frequent(individual_characters)
+    local learnt_pairs = M.tokenize_by_pairs(initial_vocabulary)
+    local vocabulary = M.merge(initial_vocabulary, individual_characters)
+    initial_vocabulary = nil
+    individual_characters = nil
+    if #vocabulary<M.MAX_SUBWORDS_LEARNING then
+        M.sort_by_frequency(learnt_pairs)
+        M.trim_less_frequent(learnt_pairs)
+        vocabulary = M.merge(vocabulary, learnt_pairs)
+    end]]
+    return initial_vocabulary
 end
 
 M.to_subwords = function(source)

@@ -2,8 +2,8 @@ local token = require("token")
 local vocabulary = require("Vocabulary")
 
 local M = {}
-M.SAMPLE_DOCUMENT_1_CONTENT = "This is a short sample document document sample short"
-M.SAMPLE_DOCUMENT_2_CONTENT = "And another sample and this time without repetition this time"
+M.SAMPLE_DOCUMENT_1_CONTENT = "This is a short a sample b document document c sample short a"
+M.SAMPLE_DOCUMENT_2_CONTENT = "low lowest newer wider new"
 
 M.run = function()
     local source = M.SAMPLE_DOCUMENT_1_CONTENT
@@ -12,7 +12,7 @@ M.run = function()
     print("Source Document: "..source)
     v1:print()
 
-    source = M.SAMPLE_DOCUMENT_1_CONTENT
+    source = M.SAMPLE_DOCUMENT_2_CONTENT
     tokens, granularity, name = token.induce(source, "subwords")
     local v2 = vocabulary:new(tokens, granularity, name)
     print("Source Document: "..source)
