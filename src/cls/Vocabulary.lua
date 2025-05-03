@@ -23,11 +23,11 @@ end
 
 function Vocabulary:print()
     local tokens = self:get("tokens")
-    print(self:get("name").." Vocabulary")
-    print("\tGranularity level: "..self:get("granularity"))
+    print('Vocabulary "'..self:get("name")..'"')
+    print('\tGranularity level: "'..self:get("granularity")..'"')
     for i = 1, #tokens do
-        local morpheme = token[i].morpheme
-        local frequency = toquen[i].frequency
+        local morpheme = tokens[i].morpheme
+        local frequency = tokens[i].frequency
         print('\tToken #'..i..': "'..morpheme..'" | frequency: '..frequency)
     end
 end

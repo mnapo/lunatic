@@ -7,6 +7,7 @@ M.MAX_SUBWORDS_LEARNING = 10
 M.VOCABULARIES_COUNT = 0
 M.WHITE_SPACE = "%s"
 M.gmatch = string.gmatch
+M.len = string.len
 M.lower = string.lower
 
 M.tokenize = function(source, delimiter)
@@ -30,12 +31,21 @@ M.to_words = function(source, delimiter)
     return M.tokenize(source, M.WHITE_SPACE)
 end
 
-M.bytepair_encoding = function(source, max)
-
+M.bytepair_encoding = function(source)
+    local vocabulary = M.tokenize(source, M.WHITE_SPACE)
+    local length = M.len(source)
+    if length%2 ~= 0 then
+        source = source.." "
+    end
+    for i = 1, length, 2 do
+        print(string.sub(source, i, i+1))
+    end
+    return {}
 end
 
 M.to_subwords = function(source)
-    return M.bytepair_encoding(source, M.MAX_SUBWORDS_LEARNING)
+    return M.bytepair_encoding(source)
+    --return M.bytepair_encoding(source, M.MAX_SUBWORDS_LEARNING)
 end
 
 M.TOKENIZATION_METHODS = {
