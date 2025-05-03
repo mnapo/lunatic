@@ -1,3 +1,5 @@
+local ClassPrototype = require("ClassPrototype")
+local token = require("Token")
 local TokenList = ClassPrototype:new()
 TokenList.__index = TokenList
 
@@ -16,38 +18,78 @@ function TokenList:new(tokens)
     return instance
 end
 
-function TokenList:add(morpheme, frequency)
-    local morpheme = morpheme or ""
-    local frequency = frequency or 1
-    local tokens = self:get("tokens")
-    tokens[#tokens+1] = {morpheme=morpheme, frequency=frequency}
-    return self
-end
-
-function TokenList:add_token(morpheme, frequency)
-    self:add(morpheme, frequency)
-    return self
-end
 
 function TokenList:get_tokens()
     return self:get("tokens")
-end
-
-function TokenList:exists(morpheme)
-    local tokens = self:get_tokens()
-    for i = 1, #tokens do
-        if tokens[i]:get_morpheme() == morpheme then
-            return true
-        end
-    end
-    return false
 end
 
 function TokenList:count()
     return #self:get_tokens()
 end
 
-function TokenList:get_token_id_by_morpheme(morpheme)
+function TokenList:get_frequency(token)
+    local tokens = self:get_tokens()
+    local morpheme = token:get_morpheme()
+    for i = 1, #tokens do
+        if tokens[i].token:get_morpheme() == morpheme then
+            return tokens[i].frequency
+        end
+    end
+    return 0
+end
+
+function TokenList:set_frequency(id, frequency)
+    local tokens = self:get_tokens()
+    tokens[id].frequency = frequency
+end
+
+function TokenList:get_frequency_by_morpheme(morpheme)
+    local tokens = self:get_tokens()
+    for i = 1, #tokens do
+        if tokens[i].token:get_morpheme() == morpheme then
+            return tokens[i].frequency
+        end
+    end
+    return 0
+end
+
+function TokenList:get_token_by_morpheme(morpheme)
+    local tokens = self:get_tokens()
+    for i = 1, #tokens do
+        if tokens[i].token:get_morpheme() == morpheme then
+            return tokens[i].token
+        end
+    end
+    return nil
+end
+
+function TokenList:get_id_by_morpheme(morpheme)
+    local tokens = self:get_tokens()
+    for i = 1, #tokens do
+        if tokens[i].token:get_morpheme() == morpheme then
+            return i
+        end
+    end
+    return nil
+end
+
+function TokenList:exists(morpheme)
+    if self:get_token_by_morpheme(morpheme) then
+        return true
+    end
+    return false
+end
+
+function TokenList:add(token_to_add)
+    local token_to_add = token_to_add
+    local tokens = self:get_tokens()
+    tokens[#tokens+1] = {token=token_to_add, frequency=1}
+    return self
+end
+
+function TokenList:add_token(token_to_add)
+    self:add(token_to_add)
+    return self
 end
 
 function TokenList:remove_token_by_morpheme(morpheme)
@@ -56,8 +98,8 @@ end
 function TokenList:print()
     local tokens = self:get_tokens()
     for i = 1, #tokens do
-        local token = tokens[i]
-        token:print()
+        tokens[i].token:print()
+        print("\tfrequency: "..tokens[i].frequency)
     end
 end
 

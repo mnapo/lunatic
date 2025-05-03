@@ -1,3 +1,4 @@
+local ClassPrototype = require("ClassPrototype")
 local Token = ClassPrototype:new()
 Token.__index = Token
 
@@ -13,26 +14,17 @@ function Token:new(morpheme)
     return instance
 end
 
-function Token:get_frequency()
-    self:get("frequency")
-end
-
 function Token:get_morpheme()
-    self:get("morpheme")
+    return self:get("morpheme")
 end
 
 function Token:set_morpheme(new_value)
-    self:set("morpheme", new_value)
-end
-
-function Token:set_frequency(new_value)
-    self:set("frequency", new_value)
+    return self:set("morpheme", new_value)
 end
 
 function Token:print()
     local morpheme = self:get_morpheme()
-    local frequency = self:get_frequency()
-    print(morpheme, frequency)
+    print('Morpheme: "'..morpheme..'"')
 end
 
 return Token

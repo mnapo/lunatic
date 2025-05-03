@@ -1,4 +1,5 @@
 local ClassPrototype = require("ClassPrototype")
+local token_list = require("TokenList")
 local Vocabulary = ClassPrototype:new()
 Vocabulary.__index = Vocabulary
 
@@ -10,7 +11,7 @@ function Vocabulary:new(tokens, granularity, name)
 
     local granularity = granularity or GRANULARITY_LEVELS[1]
     local name = name or VOCABULARY_DEFAULT_NAME
-    local tokens = tokens or {}
+    local tokens = tokens or TokenList:new()
 
     instance:set("granularity", granularity)
     :set("name", name)
@@ -25,16 +26,13 @@ function Vocabulary:print()
     local tokens = self:get("tokens")
     print('Vocabulary "'..self:get("name")..'"')
     print('\tGranularity level: "'..self:get("granularity")..'"')
-    for i = 1, #tokens do
-        local morpheme = tokens[i].morpheme
-        local frequency = tokens[i].frequency
-        print('\tToken #'..i..': "'..morpheme..'" | frequency: '..frequency)
-    end
+    tokens:print()
 end
 
-function Vocabulary:push(t)
+function Vocabulary:push(token)
     local tokens = self:get("tokens")
-    tokens[#tokens+1] = t
+    tokens:add(token)
+    return self
 end
 
 return Vocabulary

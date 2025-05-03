@@ -56,10 +56,6 @@ M.sort_by_frequency = function(tokens, descending)
         return error(M.ERROR_INSUFFICIENT_TOKENS)
     end
     local compare_frequencies = function(token_1, token_2)
-        --if (tonumber(token_1.frequency)==nil or tonumber(token_2.frequency)==nil) then
-        --    print(M.ERROR_TO_BE_REPORTED)
-        --    return false
-        --end
         if descending then
             return token_1.frequency > token_2.frequency
         else
@@ -111,26 +107,23 @@ M.tokenize_by_pairs = function(tokens)
 end
 
 M.tokenize_by_delimiter = function(source, delimiter)
-    local temp = {}
+    local temp = token_list:new()
     for morpheme in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
         local morpheme = M.lower(morpheme)
-        local key = M.MORPHEME_WORD_KEY_ID..morpheme
-        if temp[key] == nil then
-            temp[key] = 1
+        if temp:exists(morpheme) then
+            local id = temp:get_id_by_morpheme(morpheme)
+            local new_frequency = temp:get_frequency_by_morpheme(morpheme)+1
+            temp:set_frequency(id, new_frequency)
         else
-            temp[key] = temp[key] + 1
+            local new_token = token:new(morpheme)
+            temp:add(new_token)
         end
-    end
-    for morpheme, frequency in pairs(temp) do
-        temp[#temp+1] = {morpheme=morpheme, frequency=frequency}
-        temp[morpheme] = nil
     end
     return temp
 end
 
 M.to_words = function(source, add_tracing_space)
     local temp = M.tokenize_by_delimiter(source, M.WHITE_SPACE)
-    --temp = M.sanitize(temp, "words")
     if add_tracing_space then
         for i = 1, #temp do
             if (M.len(temp[i].morpheme)%2==0) then
