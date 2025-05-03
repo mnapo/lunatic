@@ -13,6 +13,14 @@ function Token:new(morpheme)
     return instance
 end
 
+function Token:get_frequency()
+    self:get("morpheme")
+end
+
+function Token:get_morpheme()
+    self:get("morpheme")
+end
+
 function Token:set_morpheme(new_value)
     self:set("morpheme", new_value)
 end
