@@ -6,7 +6,7 @@ M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 M.ERROR_METHOD = "Invalid method"
-M.MAX_SUBWORDS_LEARNING = 100
+M.LEARNING_CYCLES = 3
 M.MIN_TOKENS = 2
 M.TOKENS_THRESHOLD = 10
 M.TRACING_SPACE = "_"
@@ -87,14 +87,7 @@ M.tokenize_by_delimiter = function(source, delimiter)
     local temp = token_list:new()
     for morpheme in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
         local morpheme = M.lower(morpheme)
-        if temp:exists(morpheme) then
-            local id = temp:get_id_by_morpheme(morpheme)
-            local new_frequency = temp:get_frequency_by_morpheme(morpheme)+1
-            temp:set_frequency(id, new_frequency)
-        else
-            local new_token = token:new(morpheme)
-            temp:add(new_token, 1)
-        end
+        temp:add(morpheme)
     end
     return temp
 end
@@ -120,16 +113,17 @@ M.split_with_tracing_space = function(source)
 end
 
 M.bytepair_encoding = function(source, max)
-    local max = max or M.MAX_SUBWORDS_LEARNING
+    local max = max or M.LEARNING_CYCLES
     local initial_token_list = M.split_with_tracing_space(source)
-    local learnt_pairs = M.tokenize_by_pairs(initial_token_list)
+    --[[local learnt_pairs = M.tokenize_by_pairs(initial_token_list)
     local encoded = M.merge(initial_token_list, learnt_pairs)
-    --[[local individual_characters = M.tokenize_by_characters(initial_token_list)
+    local individual_characters = M.tokenize_by_characters(initial_token_list)
     if (encoded:count()+individual_characters:count()<max) then
         encoded = M.merge(encoded, individual_characters)
-    end]]
+    end
     encoded:sort_by_frequency(true)
-    return encoded
+    return encoded]]
+    return initial_token_list
 end
 
 M.to_subwords = function(source)
