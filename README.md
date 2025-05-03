@@ -7,7 +7,7 @@ At it's core, it works through 3 different parts represented by classes, that ca
 * **Communicator:** it offers the API to receive external communication.
 
 ## Installation
-By know you can require "lunatic/main".
+By now you can require "lunatic/main".
 See "Directory Structure" to check importing specifications.
 
 ## Acknowledgments

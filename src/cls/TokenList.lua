@@ -78,7 +78,7 @@ function TokenList:get_id_by_morpheme(morpheme)
 end
 
 function TokenList:exists(morpheme)
-    if self:get_token_by_morpheme(morpheme) then
+    if self:get_id_by_morpheme(morpheme) then
         return true
     end
     return false
@@ -90,15 +90,16 @@ function TokenList:insert(t, f)
     return self
 end
 
-function TokenList:add(morpheme)
+function TokenList:add(morpheme, frequency)
     local tokens = self:get_tokens()
     local id = self:get_id_by_morpheme(morpheme)
+    local frequency = frequency or 1
     if id then
-        local new_frequency = tokens[id].frequency+1
+        local new_frequency = tokens[id].frequency+frequency
         self:set_frequency(id, new_frequency)
     else
         local new_token = token:new(morpheme)
-        self:insert(new_token, 1)
+        self:insert(new_token, frequency)
     end
     return self
 end

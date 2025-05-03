@@ -62,25 +62,18 @@ M.tokenize_by_characters = function(tokens, quantity)
     quantity = quantity-1
     for i = 1, #tokens do
         local morpheme = tokens[i].token:get_morpheme()
-        print(morpheme)
+        local frequency = tokens[i].frequency
         local length = M.len(morpheme)
         for j = 1, length-quantity do
             local character = M.sub(morpheme, j, j+quantity)
-            if temp:exists(character) then
-                local id = temp:get_id_by_morpheme(character)
-                local new_frequency = temp:get_frequency(id)+1
-                temp:set_frequency(id, new_frequency)
-            else
-                local new_token = token:new(character)
-                temp:add(new_token, 1)
-            end
+            temp:add(character, frequency)
         end
     end
     return temp
 end
 
 M.tokenize_by_pairs = function(tokens)
-    return M.tokenize_by_characters(tokens, 2)
+    return M.tokenize_by_characters(tokens, 1)
 end
 
 M.tokenize_by_delimiter = function(source, delimiter)
@@ -115,15 +108,15 @@ end
 M.bytepair_encoding = function(source, max)
     local max = max or M.LEARNING_CYCLES
     local initial_token_list = M.split_with_tracing_space(source)
-    --[[local learnt_pairs = M.tokenize_by_pairs(initial_token_list)
-    local encoded = M.merge(initial_token_list, learnt_pairs)
+    local learnt_pairs = M.tokenize_by_pairs(initial_token_list)
+    --[[local encoded = M.merge(initial_token_list, learnt_pairs)
     local individual_characters = M.tokenize_by_characters(initial_token_list)
     if (encoded:count()+individual_characters:count()<max) then
         encoded = M.merge(encoded, individual_characters)
     end
     encoded:sort_by_frequency(true)
     return encoded]]
-    return initial_token_list
+    return learnt_pairs
 end
 
 M.to_subwords = function(source)
