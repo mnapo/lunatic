@@ -28,8 +28,8 @@ function Vocabulary:print()
     print(SEPARATOR)
     print('Vocabulary "'..self:get("name")..'"')
     print('\tGranularity level: "'..self:get("granularity")..'"')
+    print("\tTotal tokens: "..tokens:count())
     tokens:print()
-    print("***total tokens #: "..tokens:count())
     print(SEPARATOR)
 end
 

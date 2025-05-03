@@ -27,7 +27,7 @@ function TokenList:count()
     return #self:get_tokens()
 end
 
-function TokenList:get_frequency(token)
+function TokenList:get_frequency_by_token(token)
     local tokens = self:get_tokens()
     local morpheme = token:get_morpheme()
     for i = 1, #tokens do
@@ -36,6 +36,10 @@ function TokenList:get_frequency(token)
         end
     end
     return 0
+end
+
+function TokenList:get_frequency(id)
+    return self:get_tokens()[id].frequency
 end
 
 function TokenList:set_frequency(id, frequency)
@@ -80,10 +84,10 @@ function TokenList:exists(morpheme)
     return false
 end
 
-function TokenList:add(token_to_add)
+function TokenList:add(token_to_add, frequency)
     local token_to_add = token_to_add
     local tokens = self:get_tokens()
-    tokens[#tokens+1] = {token=token_to_add, frequency=1}
+    tokens[#tokens+1] = {token=token_to_add, frequency=frequency}
     return self
 end
 
@@ -99,7 +103,7 @@ function TokenList:print()
     local tokens = self:get_tokens()
     for i = 1, #tokens do
         tokens[i].token:print()
-        print("\tfrequency: "..tokens[i].frequency)
+        print("\t\t\tfreq. "..tokens[i].frequency)
     end
 end
 

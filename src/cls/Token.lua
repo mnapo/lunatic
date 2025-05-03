@@ -24,7 +24,7 @@ end
 
 function Token:print()
     local morpheme = self:get_morpheme()
-    print('- token: "'..morpheme..'"')
+    print('\t\t"'..morpheme..'"')
 end
 
 return Token

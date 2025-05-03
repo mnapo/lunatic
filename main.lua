@@ -17,5 +17,3 @@ do --Let's do some testing
     tests.register("documents")
     tests.run()
 end
-
-while true do end
