@@ -3,7 +3,7 @@ local vocabulary = require("Vocabulary")
 
 local M = {}
 M.SAMPLE_DOCUMENT_1_CONTENT = "This is a short a sample b document document c sample short a"
-M.SAMPLE_DOCUMENT_2_CONTENT = "low lowest newer wider new"
+M.SAMPLE_DOCUMENT_2_CONTENT = "low lowest newer wider new low low low low newer"
 
 M.run = function()
     local source = M.SAMPLE_DOCUMENT_1_CONTENT

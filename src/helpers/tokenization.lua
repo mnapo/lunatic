@@ -6,7 +6,6 @@ M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 M.ERROR_METHOD = "Invalid method"
-M.ERROR_TO_BE_REPORTED = 'Internal Lua "error" or really strange behaviour is happening. We are going to inspect what is going on soon'
 M.MAX_SUBWORDS_LEARNING = 30
 M.MIN_TOKENS = 2
 M.MORPHEME_CHAR_KEY_ID = "char-"
@@ -44,11 +43,11 @@ M.sanitize = function(tokens, granularity)
 end
 
 M.merge = function(vocabulary_1, vocabulary_2)
-    local temp = vocabulary_1
-    for i = 1, #vocabulary_2 do
-        temp[#vocabulary_1+1] = vocabulary_2[i]
+    local tokens = vocabulary_2:get_tokens()
+    for i = 1, vocabulary_2:count() do
+        vocabulary_1:add(tokens[i].token)
     end
-    return temp
+    return vocabulary_1
 end
 
 M.sort_by_frequency = function(tokens, descending)
@@ -74,29 +73,23 @@ M.trim_less_frequent = function(tokens)
 end
 
 M.tokenize_by_characters = function(tokens, quantity)
-    local temp = {}
+    local temp = token_list:new()
+    local tokens = tokens:get_tokens()
     local quantity = quantity or 1
     quantity = quantity-1
     for i = 1, #tokens do
-        local morpheme = tokens[i].morpheme
+        local morpheme = tokens[i].token:get_morpheme()
         local length = M.len(morpheme)
         for j = 1, length-quantity do
             local character = M.sub(morpheme, j, j+quantity)
-            local key = M.MORPHEME_CHAR_KEY_ID..character
-            if temp[key] == nil then
-                temp[key] = 1
+            if temp:exists(character) then
+                local id = temp:get_id_by_morpheme(character)
+                local new_frequency = temp:get_frequency_by_morpheme(character)+1
+                temp:set_frequency(id, new_frequency)
             else
-                local total = temp[key]+1
-                temp[key] = total
+                local new_token = token:new(character)
+                temp:add(new_token)
             end
-        end
-    end
-    for morpheme, frequency in pairs(temp) do
-        if tonumber(morpheme) then
-            print(M.ERROR_TO_BE_REPORTED)
-        else
-            temp[#temp+1] = {morpheme=morpheme, frequency=frequency}
-            temp[morpheme] = nil
         end
     end
     return temp
@@ -125,11 +118,13 @@ end
 M.to_words = function(source, add_tracing_space)
     local temp = M.tokenize_by_delimiter(source, M.WHITE_SPACE)
     if add_tracing_space then
-        for i = 1, #temp do
-            if (M.len(temp[i].morpheme)%2==0) then
-                temp[i].morpheme = temp[i].morpheme..M.TRACING_SPACE_DOUBLE
+        local tokens = temp:get_tokens()
+        for i = 1, temp:count() do
+            local morpheme = tokens[i].token:get_morpheme()
+            if (M.len(morpheme)%2==0) then
+                tokens[i].token:set_morpheme(morpheme..M.TRACING_SPACE_DOUBLE)
             else
-                temp[i].morpheme = temp[i].morpheme..M.TRACING_SPACE
+                tokens[i].token:set_morpheme(morpheme..M.TRACING_SPACE)
             end
         end
     end
@@ -141,15 +136,17 @@ M.split_with_tracing_space = function(source)
 end
 
 M.bytepair_encoding = function(source)
-    local initial_vocabulary = M.split_with_tracing_space(source)
-
-    --[[M.sort_by_frequency(initial_vocabulary)
-    M.trim_less_frequent(initial_vocabulary)
+    local initial_token_list = M.split_with_tracing_space(source)
+    local individual_characters = M.tokenize_by_characters(initial_token_list)
+    local learnt_pairs = M.tokenize_by_pairs(initial_token_list)
+    --[[M.trim_less_frequent(initial_vocabulary)
     local individual_characters = M.tokenize_by_characters(initial_vocabulary)
     M.sort_by_frequency(individual_characters)
-    M.trim_less_frequent(individual_characters)
-    local learnt_pairs = M.tokenize_by_pairs(initial_vocabulary)
-    local vocabulary = M.merge(initial_vocabulary, individual_characters)
+    M.trim_less_frequent(individual_characters)]]
+    local encoded = M.merge(initial_token_list, learnt_pairs)
+    encoded = M.merge(encoded, individual_characters)
+    encoded:sort_by_frequency(true)
+    --[[local vocabulary = M.merge(initial_vocabulary, individual_characters)
     initial_vocabulary = nil
     individual_characters = nil
     if #vocabulary<M.MAX_SUBWORDS_LEARNING then
@@ -157,7 +154,7 @@ M.bytepair_encoding = function(source)
         M.trim_less_frequent(learnt_pairs)
         vocabulary = M.merge(vocabulary, learnt_pairs)
     end]]
-    return initial_vocabulary
+    return encoded
 end
 
 M.to_subwords = function(source)

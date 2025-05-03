@@ -5,6 +5,7 @@ Vocabulary.__index = Vocabulary
 
 local VOCABULARY_DEFAULT_NAME = "Unnamed"
 local GRANULARITY_LEVELS = {"words","subwords"}
+local SEPARATOR = "########"
 
 function Vocabulary:new(tokens, granularity, name)
     local instance = ClassPrototype:new()
@@ -24,9 +25,12 @@ end
 
 function Vocabulary:print()
     local tokens = self:get("tokens")
+    print(SEPARATOR)
     print('Vocabulary "'..self:get("name")..'"')
     print('\tGranularity level: "'..self:get("granularity")..'"')
     tokens:print()
+    print("***total tokens #: "..tokens:count())
+    print(SEPARATOR)
 end
 
 function Vocabulary:push(token)
