@@ -1,22 +1,23 @@
 local M = {}
 local token = require("Token")
 local token_list = require("TokenList")
+local vocabulary = require("Vocabulary")
 
 M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 M.ERROR_METHOD = "Invalid method"
-M.LEARNING_CYCLES = 3
+M.LEARNING_CYCLES = 15
 M.MIN_TOKENS = 2
 M.TOKENS_THRESHOLD = 10
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
 M.VOCABULARIES_COUNT = 0
 M.WHITE_SPACE = "%s"
-M.gmatch = string.gmatch
-M.len = string.len
-M.lower = string.lower
-M.sub = string.sub
+M.gmatch =  string.gmatch
+M.len =     string.len
+M.lower =   string.lower
+M.sub =     string.sub
 
 M.merge = function(list1, list2)
     local tokens = list2:get_tokens()
@@ -73,7 +74,7 @@ M.tokenize_by_characters = function(tokens, quantity)
 end
 
 M.tokenize_by_pairs = function(tokens)
-    return M.tokenize_by_characters(tokens, 1)
+    return M.tokenize_by_characters(tokens, 2)
 end
 
 M.tokenize_by_delimiter = function(source, delimiter)
@@ -105,18 +106,24 @@ M.split_with_tracing_space = function(source)
     return M.to_words(source, true)
 end
 
+M.match_adjacents = function()
+end
+
+M.explode_by_characters = function(source)
+    local characters = vocabulary:new()
+    local length = M.len(source)
+    for i = 1, #length-1 do
+        local character = M.sub(source, i, i+1)
+        characters:push(character)
+    end
+    return characters
+end
+
 M.bytepair_encoding = function(source, max)
     local max = max or M.LEARNING_CYCLES
-    local initial_token_list = M.split_with_tracing_space(source)
-    local learnt_pairs = M.tokenize_by_pairs(initial_token_list)
-    --[[local encoded = M.merge(initial_token_list, learnt_pairs)
-    local individual_characters = M.tokenize_by_characters(initial_token_list)
-    if (encoded:count()+individual_characters:count()<max) then
-        encoded = M.merge(encoded, individual_characters)
-    end
-    encoded:sort_by_frequency(true)
-    return encoded]]
-    return learnt_pairs
+    local characters = M.explode_by_characters(source)
+    --initial_token_list:sort_by_frequency(true)
+    return characters
 end
 
 M.to_subwords = function(source)
