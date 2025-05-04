@@ -12,7 +12,7 @@ function Vocabulary:new(tokens, granularity, name)
 
     local granularity = granularity or GRANULARITY_LEVELS[1]
     local name = name or VOCABULARY_DEFAULT_NAME
-    local tokens = tokens or TokenList:new()
+    local tokens = tokens or token_list:new()
 
     instance:set("granularity", granularity)
     :set("name", name)
