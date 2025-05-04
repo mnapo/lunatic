@@ -6,8 +6,10 @@ M.TESTS = {
     networks = {M.dispatcher.run_networks, "Neuronal Networks"},
     vectorial = {M.dispatcher.run_vectorial, "Vectorial"}
 }
+M.clock = os.clock
 M.registered = {}
 M.SEPARATOR = "----------------------------------------------------------------------"
+M.TIME_MSG = "[Took %0.6f seconds]"
 
 M.print_tests_name = function(id)
     print(M.SEPARATOR)
@@ -32,7 +34,10 @@ M.run = function(tests_to_run)
     for i = 1, #tests_to_run do
         local tests_id = tests_to_run[i]
         M.print_tests_name(tests_id)
+        local t1 = M.clock()
         M.TESTS[tests_id][1]()
+        local t2 = M.clock()
+        print(string.format(M.TIME_MSG, t2 - t1))
     end
 end
 
