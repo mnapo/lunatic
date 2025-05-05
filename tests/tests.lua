@@ -9,7 +9,7 @@ M.TESTS = {
 M.clock = os.clock
 M.registered = {}
 M.SEPARATOR = "----------------------------------------------------------------------"
-M.TIME_MSG = "[Took %0.6f seconds]"
+M.TIME_MSG = "~~~~~~~~~~ took %0.6f seconds ~~~~~~~~~~"
 
 M.print_tests_name = function(id)
     print(M.SEPARATOR)
