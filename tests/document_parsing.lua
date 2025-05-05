@@ -3,7 +3,7 @@ local vocabulary = require("Vocabulary")
 
 local M = {}
 M.SAMPLE_DOCUMENT_1_CONTENT = "This is a short a sample b document document c sample short a"
-M.SAMPLE_DOCUMENT_2_CONTENT = "low low low low low lowest lowest newer newer newer newer newer newer wider wider wider new new newer"
+M.SAMPLE_DOCUMENT_2_CONTENT = "low low low low low lowest lowest newer newer newer newer newer newer wider wider wider new new"
 M.TOTAL_SAMPLES = 2
 M.COUNT = 1
 M.NAME_PREFIX = "#"
@@ -21,22 +21,17 @@ M.generate_name = function()
     return name
 end
 
-M.run = function()
-    local source = M.SAMPLE_DOCUMENT_1_CONTENT
-    local granularity = "words"
+M.generate = function(source, granularity)
     local tokens = token.induce(source, granularity)
     local name = M.generate_name()
-    local v1 = vocabulary:new(tokens, granularity, name)
+    local v = vocabulary:new(tokens, granularity, name)
     print("Source Document: "..source)
-    v1:print()
+    v:print()
+end
 
-    source = M.SAMPLE_DOCUMENT_2_CONTENT
-    granularity = "subwords"
-    tokens = token.induce(source, "subwords")
-    name = M.generate_name()
-    local v2 = vocabulary:new(tokens, granularity, name)
-    print("Source Document: "..source)
-    v2:print()
+M.run = function()
+    M.generate(M.SAMPLE_DOCUMENT_1_CONTENT, "words")
+    M.generate(M.SAMPLE_DOCUMENT_2_CONTENT, "subwords")
 end
 
 return M
