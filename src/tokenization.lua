@@ -1,7 +1,15 @@
-local M = {}
-local token = require("Token")
-local token_list = require("TokenList")
-local vocabulary = require("Vocabulary")
+local M =           {}
+local token =       require("Token")
+local token_list =  require("TokenList")
+local vocabulary =  require("Vocabulary")
+
+M.words = function() end
+M.subwords = function() end
+
+M.TOKENIZATION_METHODS = {
+    words =     M.to_words,
+    subwords =  M.to_subwords
+}
 
 M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
@@ -14,6 +22,7 @@ M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
 M.VOCABULARIES_COUNT = 0
 M.WHITE_SPACE = "%s"
+
 M.gmatch =  string.gmatch
 M.len =     string.len
 M.lower =   string.lower
@@ -132,11 +141,6 @@ M.to_subwords = function(source)
     local vocabulary = M.bytepair_encoding(source)
     return vocabulary
 end
-
-M.TOKENIZATION_METHODS = {
-    words = M.to_words,
-    subwords = M.to_subwords
-}
 
 M.induce = function(source, method, name)
     local granularity_level = method
