@@ -17,7 +17,6 @@ M.ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should b
 M.ERROR_METHOD = "Invalid method"
 M.LEARNING_CYCLES = 15
 M.MIN_TOKENS = 2
-M.TOKENS_THRESHOLD = 10
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
 M.VOCABULARIES_COUNT = 0
@@ -57,41 +56,27 @@ M.sort_by_frequency = function(tokens, descending)
     table.sort(tokens, compare_frequencies)
 end
 
-M.trim_less_frequent = function(tokens)
-    if #tokens > M.TOKENS_THRESHOLD then
-        for i = M.TOKENS_THRESHOLD+1, #tokens do
-            tokens[i] = nil
-        end
-    end
-end
-
-M.tokenize_by_characters = function(tokens, quantity)
-    local temp = token_list:new()
-    local tokens = tokens:get_tokens()
-    local quantity = quantity or 1
-    quantity = quantity-1
-    for i = 1, #tokens do
-        local morpheme = tokens[i].token:get_morpheme()
-        local frequency = tokens[i].frequency
-        local length = M.len(morpheme)
-        for j = 1, length-quantity do
-            local character = M.sub(morpheme, j, j+quantity)
-            temp:add(character, frequency)
-        end
-    end
-    return temp
-end
-
-M.tokenize_by_pairs = function(tokens)
-    return M.tokenize_by_characters(tokens, 2)
-end
-
 M.tokenize_by_delimiter = function(source, delimiter)
     local temp = token_list:new()
     for morpheme in M.gmatch(source, M.CAPTURE_PATTERN_START..delimiter..M.CAPTURE_PATTERN_END) do
         local morpheme = M.lower(morpheme)
         temp:add(morpheme)
     end
+    return temp
+end
+
+M.explode_by_characters = function(source)
+    local characters = {}
+    local length = M.len(source)
+    for i = 1, length-1 do
+        local character = M.sub(source, i, i)
+        characters[#characters+1] = character
+    end
+    return characters
+end
+
+M.merge_most_frequents = function(characters)
+    local temp = {}
     return temp
 end
 
@@ -115,43 +100,26 @@ M.split_with_tracing_space = function(source)
     return M.to_words(source, true)
 end
 
-M.match_adjacents = function()
-end
-
-M.explode_by_characters = function(source)
-    local characters = {}
-    local length = M.len(source)
-    for i = 1, length-1 do
-        local character = M.sub(source, i, i)
-        print(character)
-        characters[#characters+1] = character
-    end
-    return characters
-end
-
-M.bytepair_encoding = function(source, max)
+M.bpe = function(source, max)
     local max = max or M.LEARNING_CYCLES
-    local initial_token_list = M.split_with_tracing_space(source)
-    initial_token_list:sort_by_frequency(true)
-    --local characters = M.explode_by_characters(source)
-    return initial_token_list
+    local temp = M.split_with_tracing_space(source)
+    local characters = M.explode_by_characters(source)
+    temp = merge_most_frequents(characters)
+    return temp
 end
 
 M.to_subwords = function(source)
-    local vocabulary = M.bytepair_encoding(source)
+    local vocabulary = M.bpe(source)
     return vocabulary
 end
 
 M.induce = function(source, method, name)
-    local granularity_level = method
     if M.TOKENIZATION_METHODS[method] then
         method = M.TOKENIZATION_METHODS[method]
     else
         return error(M.ERROR_METHOD)
     end
-    M.VOCABULARIES_COUNT = M.VOCABULARIES_COUNT + 1
-    local name = name or "#"..M.VOCABULARIES_COUNT
-    return method(source), granularity_level, name
+    return method(source)
 end
 
 M.segment = function(vocabulary, test, method)
