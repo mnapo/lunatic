@@ -104,6 +104,15 @@ function TokenList:add(morpheme, frequency)
     return self
 end
 
+function TokenList:add_all(morphemes)
+    for i = 1, #morphemes do
+        local morpheme = morphemes[i]
+        local new_token = token:new(morpheme)
+        self:insert(new_token, 1)
+    end
+    return self
+end
+
 function TokenList:remove_token_by_morpheme(morpheme)
 end
 
@@ -129,6 +138,20 @@ function TokenList:sort_by_frequency(descending)
     end
     table.sort(tokens, compare_frequencies)
     return self
+end
+
+function TokenList:get_most_frequent()
+    local tokens = self:get_tokens()
+    local highest_frequency = 0
+    local most_frequent = token:new()
+    for i = 1, #tokens do
+        local frequency = self:get_frequency(i)
+        if (frequency > highest_frequency) then
+            most_frequent = tokens[i].token
+            highest_frequency = frequency
+        end
+    end
+    return most_frequent
 end
 
 return TokenList
