@@ -3,8 +3,8 @@ local token =       require("Token")
 local token_list =  require("TokenList")
 local vocabulary =  require("Vocabulary")
 
-M.words = function() end
-M.subwords = function() end
+M.to_words = function() end
+M.to_subwords = function() end
 
 M.TOKENIZATION_METHODS = {
     words =     M.to_words,
