@@ -7,6 +7,10 @@ do  --great discussion thread about paths (see Thadeu_de_Paula's comment). Will 
     end
     addRelPath("src")
     addRelPath("src/cls")
+    addRelPath("src/cls/math")
+    addRelPath("src/cls/network")
+    addRelPath("src/cls/semantic")
+    addRelPath("src/cls")
     addRelPath("src/helpers")
     addRelPath("tests")
 end
