@@ -11,7 +11,7 @@ M.CAPTURE_PATTERN_END = "]+)"
 M.CHARACTER_DELIMITER = "character"
 M.ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 M.ERROR_METHOD = "Invalid method"
-M.LEARNING_CYCLES = 15
+M.LEARNING_CYCLES = 9
 M.MIN_TOKENS = 2
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
@@ -85,34 +85,38 @@ M.tokenize_by_delimiter = function(source, delimiter)
 end
 
 M.replace_most_frequent_pair = function(list, most_frequent_morpheme1, most_frequent_morpheme2)
-    local tokens = base_list:get_tokens()
+    local tokens = list:get_tokens()
     for i = 1, #tokens-1 do
         local morpheme1 = tokens[i].token.morpheme
         local morpheme2 = tokens[i+1].token.morpheme
         if (morpheme1 == most_frequent_morpheme1) then
             if (morpheme2 == most_frequent_morpheme2) then
-                print("coincidence")
+                list = list:unify(i, i+1)
             end
         end
     end
+    list:clean()
+    return list
 end
 
-M.get_most_frequent_pair = function(token_list1)
+M.merge_most_frequent_pairs = function(token_list1)
     local temp = token_list:new()
     local tokens = token_list1:get_tokens()
     local most_frequent_morpheme1 = ""
     local most_frequent_morpheme2 = ""
     for i = 1, #tokens-1 do
         local morpheme1 = tokens[i].token.morpheme
-        local morpheme2 = tokens[i+1].token.morpheme
-        local pair_morpheme = morpheme1..morpheme2
-        temp:add(pair_morpheme)
-        local most_frequent_pair = temp:get_most_frequent()
-        local most_frequent_pair_morpheme = most_frequent_pair:get_morpheme()
-        if (most_frequent_pair_morpheme == pair_morpheme) then
-            most_frequent_morpheme1 = morpheme1
-            most_frequent_morpheme2 = morpheme2
-        end
+        --if not morpheme1 == M.TRACING_SPACE then
+            local morpheme2 = tokens[i+1].token.morpheme
+            local pair_morpheme = morpheme1..morpheme2
+            temp:add(pair_morpheme)
+            local most_frequent_pair = temp:get_most_frequent()
+            local most_frequent_pair_morpheme = most_frequent_pair:get_morpheme()
+            if (most_frequent_pair_morpheme == pair_morpheme) then
+                most_frequent_morpheme1 = morpheme1
+                most_frequent_morpheme2 = morpheme2
+            end
+        --end
     end
     return M.replace_most_frequent_pair(token_list1, most_frequent_morpheme1, most_frequent_morpheme2)
 end
@@ -141,11 +145,11 @@ M.bpe = function(source, max)
     local max = max or M.LEARNING_CYCLES
     local words = M.split_with_tracing_space(source)
     local characters = M.tokenize_by_delimiter(source, M.CHARACTER_DELIMITER)
-    local get_most_frequent_pair = M.get_most_frequent_pair(characters)
-    --[[for i = 1, max do
-        local characters = M.merge_most_frequent_pair(characters)
-    end]]
-    return words
+    local non_repeated = M.merge(words, characters)
+    for i = 1, max do
+        local characters = M.merge_most_frequent_pairs(characters)
+    end
+    return M.merge(non_repeated, characters)
 end
 
 M.to_subwords = function(source)

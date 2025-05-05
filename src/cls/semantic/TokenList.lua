@@ -154,4 +154,25 @@ function TokenList:get_most_frequent()
     return most_frequent
 end
 
+function TokenList:unify(id1, id2)
+    local tokens = self:get_tokens()
+    local morpheme1 = tokens[id1].token.morpheme
+    local morpheme2 = tokens[id2].token.morpheme
+    tokens[id1].token:set_morpheme(morpheme1..morpheme2)
+    tokens[id2].token:set_morpheme(nil)
+    return self
+end
+
+function TokenList:clean()
+    local tokens = self:get_tokens()
+    local temp = {}
+    for i = 1, #tokens do
+        local morpheme = tokens[i].token:get_morpheme()
+        if (morpheme) then
+            temp[#temp+1] = tokens[i]
+        end
+    end
+    self:set("tokens", temp)
+end
+
 return TokenList
