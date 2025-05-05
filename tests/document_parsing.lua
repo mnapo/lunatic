@@ -10,13 +10,12 @@ M.run = function()
     local tokens, granularity, name = token.induce(source, "words")
     local v1 = vocabulary:new(tokens, granularity, name)
     print("Source Document: "..source)
-    --v1:print()
+    v1:print()
 
     source = M.SAMPLE_DOCUMENT_2_CONTENT
     tokens, granularity, name = token.induce(source, "subwords")
-    tokens:print()
-    local v2 = vocabulary:new(tokens, granularity, name)
-    print("Source Document: "..source)
+    --local v2 = vocabulary:new(tokens, granularity, name)
+    --print("Source Document: "..source)
     --v2:print()
 end
 

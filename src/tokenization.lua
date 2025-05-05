@@ -110,20 +110,22 @@ M.match_adjacents = function()
 end
 
 M.explode_by_characters = function(source)
-    local characters = vocabulary:new()
+    local characters = {}
     local length = M.len(source)
-    for i = 1, #length-1 do
-        local character = M.sub(source, i, i+1)
-        characters:push(character)
+    for i = 1, length-1 do
+        local character = M.sub(source, i, i)
+        print(character)
+        characters[#characters+1] = character
     end
     return characters
 end
 
 M.bytepair_encoding = function(source, max)
     local max = max or M.LEARNING_CYCLES
-    local characters = M.explode_by_characters(source)
-    --initial_token_list:sort_by_frequency(true)
-    return characters
+    local initial_token_list = M.split_with_tracing_space(source)
+    initial_token_list:sort_by_frequency(true)
+    --local characters = M.explode_by_characters(source)
+    return initial_token_list
 end
 
 M.to_subwords = function(source)
