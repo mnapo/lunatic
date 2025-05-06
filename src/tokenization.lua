@@ -145,19 +145,18 @@ M.bpe = function(source, max)
     local max = max or M.LEARNING_CYCLES
     local words = M.split_with_tracing_space(source)
     local characters = M.tokenize_by_delimiter(source, M.CHARACTER_DELIMITER)
-    local non_repeated = M.merge(words, characters)
-    for i = 1, max do
+    local learnt = token_list:new()
+    for i = 1, 1 do
         local characters = M.merge_most_frequent_pairs(characters)
+        learnt = M.merge(learnt, characters)
     end
-    return M.merge(non_repeated, characters)
+    return learnt
 end
 
 M.to_subwords = function(source)
     local vocabulary = M.bpe(source)
     return vocabulary
 end
-
-
 
 M.induce = function(source, method, name)
     if M.TOKENIZATION_METHODS[method] then
