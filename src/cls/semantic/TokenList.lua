@@ -42,6 +42,11 @@ function TokenList:get_frequency(id)
     return self:get_tokens()[id].frequency
 end
 
+function TokenList:decrease_frequency(id)
+    local tokens = self:get_tokens()
+    tokens[id].frequency = tokens[id].frequency - 1
+end
+
 function TokenList:set_frequency(id, frequency)
     local tokens = self:get_tokens()
     tokens[id].frequency = frequency
@@ -167,12 +172,54 @@ function TokenList:clean()
     local tokens = self:get_tokens()
     local temp = {}
     for i = 1, #tokens do
-        local morpheme = tokens[i].token:get_morpheme()
-        if (morpheme) then
-            temp[#temp+1] = tokens[i]
+        if tokens[i] then
+            local morpheme = tokens[i].token:get_morpheme()
+            if (morpheme) then
+                temp[#temp+1] = tokens[i]
+            end
         end
     end
     self:set("tokens", temp)
+end
+
+function TokenList:sort_by_frequency(descending)
+    local tokens = self:get_tokens()
+    if #tokens<MIN_TOKENS then
+        return error(ERROR_INSUFFICIENT_TOKENS)
+    end
+    local compare_frequencies = function(token_1, token_2)
+        if descending then
+            return token_1.frequency > token_2.frequency
+        else
+            return token_1.frequency < token_2.frequency
+        end
+    end
+    table.sort(tokens, compare_frequencies)
+    self:set("tokens", tokens)
+end
+
+function TokenList:replace(id, new)
+    self:get_tokens()[id] = new
+end
+
+function TokenList:update_frequencies()
+    local tokens = self:get_tokens()
+    local frequencies = {}
+    for i = 1, #tokens do
+        local morpheme = tokens[i].token:get_morpheme()
+        if (frequencies[morpheme] == nil) then
+            frequencies[morpheme] = 0
+        end
+        frequencies[morpheme] = frequencies[morpheme] + 1
+    end
+    for i = 1, #tokens do
+        local morpheme = tokens[i].token:get_morpheme()
+        for m, _ in pairs(frequencies) do
+            if (morpheme == m) then
+                self:set_frequency(i, frequencies[m])
+            end
+        end
+    end
 end
 
 return TokenList
