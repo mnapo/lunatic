@@ -96,7 +96,7 @@ M.replace_by_pair = function(base_list, pair)
         local token1 = tokens[i]
         if token1 then
             local morpheme1 = tokens[i].token:get_morpheme()
-            if (morpheme1 ~= M.TRACING_SPACE) then
+            --if (morpheme1 ~= M.TRACING_SPACE) then
                 local morpheme2 = tokens[i+1].token:get_morpheme()
                 if (morpheme2) then
                     local union = morpheme1..morpheme2
@@ -107,7 +107,7 @@ M.replace_by_pair = function(base_list, pair)
                         base_list:replace(i+1, nil)
                     end
                 end
-            end
+            --end
         end
     end
     return base_list:clean()
@@ -118,27 +118,27 @@ M.explode_by_pairs = function(base_list, allow_repeateds)
     local temp = token_list:new()
     for i = 1, #tokens-1 do
         local morpheme1 = tokens[i].token:get_morpheme()
-        if (M.sub(morpheme1,1,1) ~= M.TRACING_SPACE) then
+        --if (M.sub(morpheme1,1,1) ~= M.TRACING_SPACE) then
             local morpheme2 = tokens[i+1].token:get_morpheme()
             local new_morpheme = morpheme1..morpheme2
             temp:add(new_morpheme)
-        end
+        --end
     end
     return temp
 end
 
 M.bpe = function(source, max)
     local max = max or M.LEARNING_CYCLES
-    local words = M.split_with_tracing_space(source)
+    --local words = M.split_with_tracing_space(source)
     local characters = M.tokenize_by_delimiter(source, "character")
+    local pairs = M.explode_by_pairs(characters, false)
     --for i = 1, max do
-        local pairs = M.explode_by_pairs(characters, false)
-        pairs:sort_by_frequency(true)
-        local most_frequent_pair = pairs:get_tokens()[1]
-        M.replace_by_pair(characters, most_frequent_pair)
-        characters:update_frequencies()
+    pairs:sort_by_frequency(true)
+    local most_frequent_pair = pairs:get_tokens()[1]
+    M.replace_by_pair(characters, most_frequent_pair)
+        --characters:update_frequencies()
     --end
-    return characters
+    return pairs
 end
 
 M.to_subwords = function(source)
