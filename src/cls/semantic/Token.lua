@@ -2,6 +2,8 @@ local ClassPrototype = require("ClassPrototype")
 local Token = ClassPrototype:new()
 Token.__index = Token
 
+local RESERVED_MORPHEME_DELETE = "DELETE"
+
 function Token:new(morpheme)
     local instance = ClassPrototype:new()
 
@@ -19,6 +21,9 @@ function Token:get_morpheme()
 end
 
 function Token:set_morpheme(new_value)
+    if (new_value == RESERVED_MORPHEME_DELETE) then
+        return error(ERROR_RESERVED_MORPHEME.." "..RESERVED_MORPHEME_DELETE)
+    end
     return self:set("morpheme", new_value)
 end
 
