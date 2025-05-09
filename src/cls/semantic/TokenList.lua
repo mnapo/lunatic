@@ -5,6 +5,7 @@ TokenList.__index = TokenList
 
 local ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
 local MIN_TOKENS = 2
+local RESERVED_MORPHEME_DELETE = "DELETE"
 
 function TokenList:new(tokens)
     local instance = ClassPrototype:new()
@@ -174,7 +175,7 @@ function TokenList:clean()
     for i = 1, #tokens do
         if tokens[i] then
             local morpheme = tokens[i].token:get_morpheme()
-            if (morpheme) then
+            if (morpheme ~= RESERVED_MORPHEME_DELETE) then
                 temp[#temp+1] = tokens[i]
             end
         end
