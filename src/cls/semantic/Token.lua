@@ -2,6 +2,7 @@ local ClassPrototype = require("ClassPrototype")
 local Token = ClassPrototype:new()
 Token.__index = Token
 
+local ERROR_RESERVED_MORPHEME = "Can't set reserved morpheme "
 local RESERVED_MORPHEME_DELETE = "DELETE"
 
 function Token:new(morpheme)
