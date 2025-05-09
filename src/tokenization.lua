@@ -11,7 +11,7 @@ M.CAPTURE_PATTERN_END = "]+)"
 M.CHARACTER_DELIMITER = "character"
 M.ERROR_METHOD = "Invalid method"
 M.LEARNING_CYCLES = 2
-M.RESERVED_MORPHEME_DELETE = RESERVED_MORPHEME_DELETE
+M.RESERVED_MORPHEME_DELETE = "DELETE"
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
 M.VOCABULARIES_COUNT = 0
@@ -111,7 +111,6 @@ M.replace_by_pair = function(base_list, pair)
         end
     end
     base_list:clean()
-    base_list:print()
 end
 
 M.explode_by_pairs = function(base_list, allow_repeateds)
@@ -136,14 +135,9 @@ M.bpe = function(source, max)
     for i = 1, max do
         pairs = M.explode_by_pairs(characters, false)
         pairs:sort_by_frequency(true)
-        print("cycle"..i)
-        pairs:print()
         local most_frequent_pair = pairs:get_tokens()[1]
-        print("chars"..i)
         M.replace_by_pair(characters, most_frequent_pair)
         characters:update_frequencies()
-        print("charsupdated"..i)
-        characters:print()
     end
     return characters
 end
