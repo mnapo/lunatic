@@ -28,6 +28,10 @@ function Token:set_morpheme(new_value)
     return self:set("morpheme", new_value)
 end
 
+function Token:set_to_discard()
+    return self:set("morpheme", RESERVED_MORPHEME_DELETE)
+end
+
 function Token:print()
     local morpheme = self:get_morpheme()
     print('\t\t"'..morpheme..'"')
