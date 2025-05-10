@@ -10,7 +10,7 @@ M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.CHARACTER_DELIMITER = "character"
 M.ERROR_METHOD = "Invalid method"
-M.LEARNING_CYCLES = 2
+M.LEARNING_CYCLES = 8
 M.RESERVED_MORPHEME_DELETE = "DELETE"
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
@@ -104,7 +104,7 @@ M.replace_by_pair = function(base_list, pair)
                         --base_list:decrease_frequency(i)
                         --base_list:decrease_frequency(i+1)
                         base_list:replace(i, pair)
-                        base_list:replace(i+1, {token=token:new():set_morpheme(M.RESERVED_MORPHEME_DELETE), frequency=0})
+                        base_list:replace(i+1, {token=token:new():set_to_discard(), frequency=nil})
                     end
                 end
             --end
@@ -118,11 +118,11 @@ M.explode_by_pairs = function(base_list, allow_repeateds)
     local temp = token_list:new()
     for i = 1, #tokens-1 do
         local morpheme1 = tokens[i].token:get_morpheme()
-        --if (M.sub(morpheme1,1,1) ~= M.TRACING_SPACE) then
+        if (M.sub(morpheme1,-1) ~= M.TRACING_SPACE) then
             local morpheme2 = tokens[i+1].token:get_morpheme()
             local new_morpheme = morpheme1..morpheme2
             temp:add(new_morpheme)
-        --end
+        end
     end
     return temp
 end
