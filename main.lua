@@ -16,6 +16,7 @@ do  --great discussion thread about paths (see Thadeu_de_Paula's comment). Will 
 end
 
 do --Let's do some testing
+    error = require("ErrorsHandler"):new("verbose").intercept
     local tests = require("tests")
     --tests.register("vectorial")
     --tests.register("networks")
