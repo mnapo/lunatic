@@ -5,12 +5,13 @@ local vocabulary =  require("Vocabulary")
 
 M.to_words = function() end
 M.to_subwords = function() end
+M.TOKENIZATION_METHODS = {}
 
 M.CAPTURE_PATTERN_START = "([^"
 M.CAPTURE_PATTERN_END = "]+)"
 M.CHARACTER_DELIMITER = "character"
 M.ERROR_METHOD = "Invalid method"
-M.LEARNING_CYCLES = 8
+M.LEARNING_CYCLES = 12
 M.RESERVED_MORPHEME_DELETE = "DELETE"
 M.TRACING_SPACE = "_"
 M.TRACING_SPACE_DOUBLE = "__"
@@ -69,14 +70,18 @@ M.tokenize_by_delimiter = function(source, delimiter)
     return temp
 end
 
-M.to_words = function(source, add_tracing_space)
+M.to_words = function(source, add_tracing_space, allow_double_tracing_space)
     local temp = M.tokenize_by_delimiter(source, M.WHITE_SPACE_ESCAPED)
     if add_tracing_space then
         local tokens = temp:get_tokens()
         for i = 1, temp:count() do
             local morpheme = tokens[i].token:get_morpheme()
             if (M.len(morpheme)%2==0) then
-                tokens[i].token:set_morpheme(morpheme..M.TRACING_SPACE_DOUBLE)
+                if (allow_double_tracing_space) then
+                    tokens[i].token:set_morpheme(morpheme..M.TRACING_SPACE_DOUBLE)
+                else
+                    tokens[i].token:set_morpheme(morpheme..M.TRACING_SPACE)
+                end
             else
                 tokens[i].token:set_morpheme(morpheme..M.TRACING_SPACE)
             end
@@ -86,7 +91,7 @@ M.to_words = function(source, add_tracing_space)
 end
 
 M.split_with_tracing_space = function(source)
-    return M.to_words(source, true)
+    return M.to_words(source, true, true)
 end
 
 M.replace_by_pair = function(base_list, pair)
@@ -96,24 +101,20 @@ M.replace_by_pair = function(base_list, pair)
         local token1 = tokens[i]
         if token1 then
             local morpheme1 = tokens[i].token:get_morpheme()
-            --if (morpheme1 ~= M.TRACING_SPACE) then
-                local morpheme2 = tokens[i+1].token:get_morpheme()
-                if (morpheme2) then
-                    local union = morpheme1..morpheme2
-                    if (union == pair_morpheme) then
-                        --base_list:decrease_frequency(i)
-                        --base_list:decrease_frequency(i+1)
-                        base_list:replace(i, pair)
-                        base_list:replace(i+1, {token=token:new():set_to_discard(), frequency=nil})
-                    end
+            local morpheme2 = tokens[i+1].token:get_morpheme()
+            if (morpheme2) then
+                local union = morpheme1..morpheme2
+                if (union == pair_morpheme) then
+                    base_list:replace(i, pair)
+                    base_list:replace(i+1, {token=token:new():set_to_discard(), frequency=nil})
                 end
-            --end
+            end
         end
     end
     base_list:clean()
 end
 
-M.explode_by_pairs = function(base_list, allow_repeateds)
+M.explode_by_pairs = function(base_list)
     local tokens = base_list:get_tokens()
     local temp = token_list:new()
     for i = 1, #tokens-1 do
@@ -127,19 +128,37 @@ M.explode_by_pairs = function(base_list, allow_repeateds)
     return temp
 end
 
+M.remove_fully_parsed_words = function(base_list, parsed_words_list)
+    local tokens = base_list:get_tokens()
+    for i = 1, #tokens do
+        local morpheme1 = tokens[i].token:get_morpheme()
+        local parsed_words_tokens = parsed_words_list:get_tokens()
+        for j = 1, #parsed_words_tokens do
+            local morpheme2 = parsed_words_tokens[j].token:get_morpheme()
+            if (morpheme1 == morpheme2) then
+                base_list:replace(i, {token=token:new():set_to_discard(), frequency=nil})
+            end
+        end
+    end
+    base_list:clean()
+end
+
 M.bpe = function(source, max)
     local max = max or M.LEARNING_CYCLES
-    --local words = M.split_with_tracing_space(source)
     local characters = M.tokenize_by_delimiter(source, "character")
+    local learnt = M.merge(token_list:new(), characters)
+    local words =  M.to_words(source, true, false)
     local pairs = token_list:new()
     for i = 1, max do
-        pairs = M.explode_by_pairs(characters, false)
+        pairs = M.explode_by_pairs(characters)
         pairs:sort_by_frequency(true)
         local most_frequent_pair = pairs:get_tokens()[1]
+        learnt:add(most_frequent_pair.token:get_morpheme())
         M.replace_by_pair(characters, most_frequent_pair)
+        M.remove_fully_parsed_words(characters, words)
         characters:update_frequencies()
     end
-    return characters
+    return learnt
 end
 
 M.to_subwords = function(source)
