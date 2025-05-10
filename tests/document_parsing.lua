@@ -2,9 +2,10 @@ local token = require("tokenization")
 local vocabulary = require("Vocabulary")
 
 local M = {}
+M.TOTAL_SAMPLES = 2
+
 M.SAMPLE_DOCUMENT_1_CONTENT = "This is a short a sample b document document c sample short a"
 M.SAMPLE_DOCUMENT_2_CONTENT = "low low low low low lowest lowest newer newer newer newer newer newer wider wider wider new new"
-M.TOTAL_SAMPLES = 2
 M.COUNT = 1
 M.NAME_PREFIX = "#"
 
