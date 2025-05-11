@@ -2,7 +2,7 @@ local ClassPrototype = require("ClassPrototype")
 local Token = ClassPrototype:new()
 Token.__index = Token
 
-local ERROR_RESERVED_MORPHEME = "Can't set reserved morpheme "
+local ERROR_RESERVED_MORPHEME = 9
 local RESERVED_MORPHEME_DELETE = "DELETE"
 
 function Token:new(morpheme)
@@ -23,7 +23,7 @@ end
 
 function Token:set_morpheme(new_value)
     if (new_value == RESERVED_MORPHEME_DELETE) then
-        return error(ERROR_RESERVED_MORPHEME.." "..RESERVED_MORPHEME_DELETE)
+        return error(ERROR_RESERVED_MORPHEME)
     end
     return self:set("morpheme", new_value)
 end

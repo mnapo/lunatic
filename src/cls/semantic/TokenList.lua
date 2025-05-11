@@ -3,7 +3,7 @@ local token = require("Token")
 local TokenList = ClassPrototype:new()
 TokenList.__index = TokenList
 
-local ERROR_INSUFFICIENT_TOKENS = "There's not enough tokens to sort (there should be two at least)"
+local ERROR_INSUFFICIENT_TOKENS = 10
 local MIN_TOKENS = 2
 local RESERVED_MORPHEME_DELETE = "DELETE"
 

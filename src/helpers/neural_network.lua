@@ -1,6 +1,6 @@
 local M = {}
 
-local ERROR_ACTIVATION_FUNCTION = "Error, the activation function doesn't exist"
+local ERROR_ACTIVATION_FUNCTION = 11
 
 M.sigmoid = function(x)
     return 1/(1+E^((-1)*x))
