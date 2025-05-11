@@ -2,13 +2,13 @@ local ClassPrototype = require("ClassPrototype")
 local R_Vector = ClassPrototype:new()
 R_Vector.__index = R_Vector
 
-local ERROR_NOT_TABLE = "Table expected, got "
-local ERROR_NOT_REAL_NUMBER = "R_Vector must be filled with real numbers!"
+local ERROR_NOT_TABLE = 1
+local ERROR_NOT_REAL_NUMBER = 2
 
 function R_Vector:new(t)
     local content_type = type(t)
     if not (content_type == "table") then
-        error(ERROR_NOT_TABLE..content_type)
+        error(ERROR_NOT_TABLE, content_type)
     end
 
     for i = 1, #t do

@@ -3,9 +3,9 @@ local R_Vector = require("R_Vector")
 local Layer = ClassPrototype:new()
 Layer.__index = Layer
 
-local ERROR_INVALID_TYPE = "Layer type is wrong."
-local ERROR_NEXT_LAYER_UNDEFINED = "There isn't a next layer defined"
-local ERROR_NOT_UNIT = "Error, Unit expected. Got "
+local ERROR_INVALID_TYPE = 3
+local ERROR_NEXT_LAYER_UNDEFINED = 4
+local ERROR_NOT_UNIT = 5
 
 local is_Unit = function(x)
     if not (type(x) == "table") then
@@ -49,7 +49,7 @@ end
 
 function Layer:push(u)
     if not (is_Unit(u)) then
-        return false, ERROR_NOT_UNIT..type(u)
+        return false, ERROR_NOT_UNIT
     end
     local units = self:get("units")
     units[#units+1] = u
