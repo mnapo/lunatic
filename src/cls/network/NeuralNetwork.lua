@@ -8,9 +8,9 @@ local DEFAULT_NAME_COMMON = "L"
 local DEFAULT_NAME_HIDDEN = "H"
 local DEFAULT_NAME_INPUT = "X"
 local DEFAULT_NAME_OUTPUT = "O"
-local ERROR_LAYER_WRONG_ID = "Wrong layer id"
-local ERROR_NOT_LAYER = "Error, Layer expected. Got "
-local ERROR_NOT_NUMBER = "Id number needs to be a positive integer"
+local ERROR_LAYER_WRONG_ID = 6
+local ERROR_NOT_LAYER = 7
+local ERROR_NOT_NUMBER = 8
 
 local generate_name = function(type, id)
     if type == "input" then
@@ -56,7 +56,7 @@ end
 
 function NeuralNetwork:push(l)
     if not (is_Layer(l)) then
-        return false, ERROR_NOT_LAYER..type(l)
+        return false, ERROR_NOT_LAYER
     end
     local layers = self:get("layers")
     local new_id = self:get("last")+1
