@@ -18,5 +18,16 @@ network
 documents
 ```
 
+## Directory Structure
+.
+├── img
+├── src
+│   ├── cls
+│   │   ├── math
+│   │   ├── network
+│   │   └──semantic
+│   └── helpers
+└──tests
+
 ## Acknowledgments
 * Speech and Language Processing (J. Daniel & M. James H.) 3rd ed. (2025)
