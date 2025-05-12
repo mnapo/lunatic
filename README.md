@@ -19,6 +19,7 @@ documents
 ```
 
 ## Directory Structure
+```
 .
 ├── img
 ├── src
@@ -28,6 +29,7 @@ documents
 │   │   └──semantic
 │   └── helpers
 └──tests
+```
 
 ## Acknowledgments
 * Speech and Language Processing (J. Daniel & M. James H.) 3rd ed. (2025)
