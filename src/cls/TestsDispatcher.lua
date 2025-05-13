@@ -21,4 +21,19 @@ function TestsDispatcher:new(visible_titles, visible_descriptions, visible_times
     return SINGLETON_TESTS_DISPATCHER
 end
 
+function TestsDispatcher:print_test_execution_time(test)
+end
+
+function TestsDispatcher:print_test_description(test)
+end
+
+function TestsDispatcher:print_test_title(test)
+end
+
+function TestsDispatcher:print_test(test)
+end
+
+function TestsDispatcher:print_total_execution_time()
+end
+
 return TestsDispatcher
