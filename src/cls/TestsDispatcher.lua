@@ -21,6 +21,12 @@ function TestsDispatcher:new(visible_titles, visible_descriptions, visible_times
     return SINGLETON_TESTS_DISPATCHER
 end
 
+function TestsDispatcher:verbosity_off()
+end
+
+function TestsDispatcher:verbosity_on()
+end
+
 function TestsDispatcher:print_test_execution_time(test)
 end
 
