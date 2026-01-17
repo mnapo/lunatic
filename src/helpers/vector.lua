@@ -78,18 +78,23 @@ vector.flatten = function(v)
 end
 
 vector.softmax = function(v)
-    local dimension = v:get_dimension()
+    local n = v:get_dimension()
+    local max = -math.huge
+    for i = 1, n do
+        local vi = v:get_value(i)
+        if vi > max then max = vi end
+    end
+    local exps = {}
     local sum = 0
-    local normalized = {}
-    for i = 1, dimension do
-        local vi = math.exp(v:get_value(i))
-        v:set_value(i, vi)
-        sum = sum + vi
+    for i = 1, n do
+        local e = math.exp(v:get_value(i) - max)
+        exps[i] = e
+        sum = sum + e
     end
-    for i = 1, dimension do
-        normalized[i] = v:get_value(i)/sum
+    for i = 1, n do
+        exps[i] = exps[i] / sum
     end
-    return r_vector:new(normalized)
+    return r_vector:new(exps)
 end
 
 return vector
