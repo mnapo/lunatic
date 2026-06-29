@@ -1,0 +1,42 @@
+# Changelog
+
+All notable changes to Lunatic will be documented in this file.
+
+The project follows a versioned, architecture-driven development model.
+
+---
+
+## [0.0.1] - Initial architecture
+
+Defined initial structure. Archived
+
+---
+
+## [0.0.2] - Setting up
+
+### Added
+
+- Initial repository structure for Lunatic
+- Core module system skeleton (`core/`)
+- Prototype-based Class system
+- Basic Math layer (Vector, Matrix)
+- Documentation baseline:
+  - LAS-000 (Philosophy)
+  - LAS-001 (Core Object & Module System)
+- Project roadmap definition
+- Contribution guidelines
+- Code of conduct
+- License placeholder
+- Basic directory structure for future modules:
+  - linalg
+  - statistics
+  - random
+  - constants
+
+---
+
+### Notes
+
+- This release focuses on architecture definition, not functionality completeness.
+- APIs are experimental and may change in future versions.
+- Math layer is intentionally minimal and Tensor-oriented by design.
