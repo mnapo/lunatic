@@ -5,7 +5,7 @@ local function assert_equals(actual, expected, message)
 end
 
 local function test_vector_imports()
-    local Vector = lunatic.Vector
+    local Vector = lunatic.math.Vector
     assert(type(Vector) == "table", "expected Vector module to be exported from entrypoint")
 
     local v1 = Vector.new({1, 2, 3})
