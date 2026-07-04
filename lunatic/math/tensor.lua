@@ -3,10 +3,15 @@ local stride = require("lunatic.math.internal.stride")
 local shape = require("lunatic.math.internal.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
-arithmetic.init(tensor_factory)
 
 local Tensor = {}
 Tensor.__index = Tensor
+
+local function tensor_factory(data, shape)
+    return Tensor.new(data, shape)
+end
+
+arithmetic.init(tensor_factory)
 
 --
 -- Helpers
@@ -99,7 +104,7 @@ end
 -- Reshape (no copy)
 --
 
-function Tensor:reshape(new_shape)
+--[[function Tensor:reshape(new_shape)
     local new_size = product(new_shape)
 
     assert(new_size == self.size,
@@ -107,7 +112,7 @@ function Tensor:reshape(new_shape)
 
     local t = Tensor.new(self.storage:raw(), new_shape)
     return t
-end
+end]]
 
 --
 -- Copy
