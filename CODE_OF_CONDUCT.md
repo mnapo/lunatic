@@ -1,40 +1,83 @@
-# Contributing to Lunatic
+# Code of Conduct
 
-Lunatic is a structured, evolving AI ecosystem for Lua.  
-Contributions should follow the architecture-first design philosophy.
+Lunatic is a collaborative, open-source project focused on building a clear and modern AI ecosystem for Lua.
 
----
-
-## Core principles
-
-- Readability over complexity
-- Composition over inheritance
-- Explicit behavior over hidden magic
-- API-first design
-- Stability through layered architecture (LAS-driven)
+This document defines expected behavior when participating in the project.
 
 ---
 
-## Architecture awareness
+## Our standards
 
-Before contributing, understand the current design documents:
+We aim to keep communication and collaboration:
 
-- `docs/architecture/LAS-000-philosophy.md`
-- `docs/architecture/LAS-001-core-object-module-system.md`
+- Respectful
+- Constructive
+- Technical and focused
+- Open to discussion and iteration
 
-These define the system boundaries and must guide all changes.
+We value clarity over authority and ideas over hierarchy.
 
 ---
 
-## Development workflow
+## Expected behavior
 
-All contributions should be made through Pull Requests.
+All contributors should:
 
-### Branch naming
+- Be respectful in discussions and reviews
+- Focus on the technical content of contributions
+- Accept feedback without hostility
+- Provide clear reasoning for design decisions
+- Consider long-term maintainability of the system
 
-Use descriptive versioned branches:
+---
 
-```text id="branch_ex"
-v0.0.2-setting-up
-v0.0.3-math-foundation
-v0.1.0-tensor-system
+## Unacceptable behavior
+
+The following is not allowed:
+
+- Disrespectful or aggressive communication
+- Personal attacks or harassment
+- Deliberate disruption of discussions
+- Dismissing feedback without technical reasoning
+- Behavior that undermines collaboration
+
+---
+
+## Scope
+
+This Code of Conduct applies to:
+
+- GitHub issues
+- Pull requests
+- Discussions
+- Any form of project-related communication
+
+---
+
+## Philosophy alignment
+
+Lunatic is built on the principle:
+
+> Readable first, performant by design.
+
+This also applies to communication: clarity and respect are preferred over complexity or ego.
+
+---
+
+## Enforcement
+
+Maintainers are responsible for enforcing this Code of Conduct fairly and consistently.
+
+Actions may include:
+
+- Requesting behavior adjustments
+- Temporary restriction from participation
+- Removal from the project in severe cases
+
+---
+
+## Final note
+
+This project is still in early development (V0.0.2).
+
+We are building not only a system, but a shared understanding of how it should evolve.
