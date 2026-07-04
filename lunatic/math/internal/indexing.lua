@@ -35,4 +35,18 @@ function Indexing.to_flat_index(tensor, indexes)
     )
 end
 
+function Indexing.unravel(shape, index)
+    local out = {}
+
+    local remaining = index - 1
+
+    for i = #shape, 1, -1 do
+        local dim = shape[i]
+        out[i] = (remaining % dim) + 1
+        remaining = math.floor(remaining / dim)
+    end
+
+    return out
+end
+
 return Indexing
