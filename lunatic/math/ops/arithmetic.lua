@@ -1,12 +1,8 @@
-local indexing = require("lunatic.math.internal.indexing")
-local broadcast = require("lunatic.math.broadcast")
 local shape = require("lunatic.math.shape")
+local broadcast = require("lunatic.math.broadcast")
+local indexing = require("lunatic.math.internal.indexing")
 
 local arithmetic = {}
-
---
--- Tensor Factory injection
---
 
 arithmetic.factory = nil
 
@@ -14,63 +10,28 @@ function arithmetic.init(factory)
     arithmetic.factory = factory
 end
 
---
--- Helpers
---
-
-local function elementwise(a, b, op)
-    local size = a.size
-    local data = {}
-
-    local a_storage = a.storage:raw()
-    local b_storage = b.storage:raw()
-
-    for i = 1, size do
-        data[i] = op(a_storage[i], b_storage[i])
-    end
-
-    return data
-end
-
-local function elementwise_scalar(a, scalar, op)
-    local size = a.size
-    local data = {}
-
-    local a_storage = a.storage:raw()
-
-    for i = 1, size do
-        data[i] = op(a_storage[i], scalar)
-    end
-
-    return data
-end
-
---
--- Guard: ensure initialization
---
-
 local function ensure_factory()
     assert(arithmetic.factory, "arithmetic: factory not initialized")
 end
 
 --
--- Ops
+-- Core Elementwise Operations
 --
 
-function arithmetic.add(a, b)
+local function elementwise(a, b, op)
     ensure_factory()
 
-    local out_shape = Broadcast.resolve(a.shape, b.shape)
-    local out_size = Shape.size(out_shape)
+    local out_shape = broadcast.resolve(a.shape, b.shape)
+    local out_size = shape.size(out_shape)
 
     local data = {}
 
     for i = 1, out_size do
 
-        -- output linear -> multi-index
+        -- 1. output linear → multi-index
         local out_idx = indexing.unravel(out_shape, i)
 
-        -- broadcast mapping
+        -- 2. broadcast mapping
         local idxA, idxB = broadcast.map_index(
             out_idx,
             a.shape,
@@ -78,60 +39,71 @@ function arithmetic.add(a, b)
             out_shape
         )
 
-        -- multi-index -> linear index
+        -- 3. multi-index → linear index
         local linA = indexing.compute(a.shape, a.strides, a.offset, idxA)
         local linB = indexing.compute(b.shape, b.strides, b.offset, idxB)
 
-        -- access storage
+        -- 4. value access
         local va = a.storage:get(linA)
         local vb = b.storage:get(linB)
 
-        data[i] = va + vb
+        -- 5. apply op
+        data[i] = op(va, vb)
     end
 
     return arithmetic.factory(data, out_shape)
 end
 
-function arithmetic.sub(a, b)
-    ensure_factory()
-    assert(a.size == b.size, "sub: size mismatch")
+--
+-- Scalar Elementwise Operations
+--
 
-    local data = elementwise(a, b, function(x, y)
-        return x - y
-    end)
+local function scalar_elementwise(a, scalar, op)
+    ensure_factory()
+
+    local data = {}
+    local size = a.size
+
+    for i = 1, size do
+        local v = a.storage:get(i)
+        data[i] = op(v, scalar)
+    end
 
     return arithmetic.factory(data, a.shape)
+end
+
+--
+-- Public ops
+--
+
+function arithmetic.add(a, b)
+    return elementwise(a, b, function(x, y) return x + y end)
+end
+
+function arithmetic.sub(a, b)
+    return elementwise(a, b, function(x, y) return x - y end)
 end
 
 function arithmetic.mul(a, b)
-    ensure_factory()
-    assert(a.size == b.size, "mul: size mismatch")
+    return elementwise(a, b, function(x, y) return x * y end)
+end
 
-    local data = elementwise(a, b, function(x, y)
-        return x * y
-    end)
-
-    return arithmetic.factory(data, a.shape)
+function arithmetic.div(a, b)
+    return elementwise(a, b, function(x, y) return x / y end)
 end
 
 function arithmetic.scale(a, scalar)
-    ensure_factory()
-
-    local data = elementwise_scalar(a, scalar, function(x, s)
-        return x * s
-    end)
-
-    return arithmetic.factory(data, a.shape)
+    return scalar_elementwise(a, scalar, function(x, s) return x * s end)
 end
 
 function arithmetic.neg(a)
-    ensure_factory()
-
-    local data = elementwise_scalar(a, 0, function(_, x)
-        return -x
-    end)
-
-    return arithmetic.factory(data, a.shape)
+    return scalar_elementwise(a, 0, function(_, x) return -x end)
 end
+
+--
+-- OPTIONAL: explicit elementwise API (future extensibility)
+--
+
+arithmetic.elementwise = elementwise
 
 return arithmetic

@@ -1,5 +1,5 @@
+local indexing = require("lunatic.math.internal.indexing")
 local shape = require("lunatic.math.shape")
-local indexing = require("lunatic.math.indexing")
 
 local Broadcast = {}
 
@@ -48,8 +48,8 @@ end
 --
 
 function Broadcast.map_index(out_index, shapeA, shapeB, out_shape)
-    local A = Shape.normalize(shapeA, #out_shape)
-    local B = Shape.normalize(shapeB, #out_shape)
+    local A = shape.normalize(shapeA, #out_shape)
+    local B = shape.normalize(shapeB, #out_shape)
 
     local idxA = {}
     local idxB = {}
