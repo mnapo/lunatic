@@ -38,6 +38,21 @@ local function same_shape(a, b)
     return true
 end
 
+local function compute_index(t, indexes)
+    assert(#indexes == t.ndim, "Tensor:get(): wrong number of indexes")
+
+    local idx = t.offset or 0
+
+    for i = 1, t.ndim do
+        local v = indexes[i]
+        assert(v >= 1 and v <= t.shape[i], "Tensor:get(): index out of bounds")
+
+        idx = idx + (v - 1) * t.strides[i]
+    end
+
+    return idx + 1 -- Lua 1-based
+end
+
 --
 -- Constructor
 --
