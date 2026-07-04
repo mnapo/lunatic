@@ -1,3 +1,4 @@
+local shape = require("lunatic.math.internal.shape")
 local arithmetic = {}
 
 --
@@ -8,6 +9,60 @@ arithmetic.factory = nil
 
 function arithmetic.init(factory)
     arithmetic.factory = factory
+end
+
+--
+-- Helpers
+--
+
+local function align_shapes(a_shape, b_shape)
+    local max_dim = math.max(#a_shape, #b_shape)
+
+    local A = shape.normalize(a_shape, max_dim)
+    local B = shape.normalize(b_shape, max_dim)
+
+    return A, B
+end
+
+local function resolve_broadcast_shape(a_shape, b_shape)
+    local A, B = align_shapes(a_shape, b_shape)
+
+    local result = {}
+
+    for i = 1, #A do
+        if A[i] == B[i] then
+            result[i] = A[i]
+        elseif A[i] == 1 then
+            result[i] = B[i]
+        elseif B[i] == 1 then
+            result[i] = A[i]
+        else
+            error("Broadcast error: incompatible shapes")
+        end
+    end
+
+    return result
+end
+
+local function map_index(out_idx, shape, target_shape)
+    local idx_a = {}
+    local idx_b = {}
+
+    for i = 1, #shape do
+        if target_shape[i] == 1 then
+            idx_a[i] = 1
+        else
+            idx_a[i] = out_idx[i]
+        end
+
+        if target_shape[i] == 1 then
+            idx_b[i] = 1
+        else
+            idx_b[i] = out_idx[i]
+        end
+    end
+
+    return idx_a, idx_b
 end
 
 local function elementwise(a, b, op)
@@ -51,13 +106,36 @@ end
 
 function arithmetic.add(a, b)
     ensure_factory()
-    assert(a.size == b.size, "add: size mismatch")
 
-    local data = elementwise(a, b, function(x, y)
-        return x + y
-    end)
+    local out_shape = resolve_broadcast_shape(a.shape, b.shape)
 
-    return arithmetic.factory(data, a.shape)
+    local data = {}
+
+    local max_size = shape.size(out_shape)
+
+    for i = 1, max_size do
+
+        -- convert linear index to multi-index (via strides-like expansion)
+        local idx = i - 1
+
+        local a_val, b_val
+
+        if a.size == 1 then
+            a_val = a.storage:get(1)
+        else
+            a_val = a.storage:get(i)
+        end
+
+        if b.size == 1 then
+            b_val = b.storage:get(1)
+        else
+            b_val = b.storage:get(i)
+        end
+
+        data[i] = a_val + b_val
+    end
+
+    return arithmetic.factory(data, out_shape)
 end
 
 function arithmetic.sub(a, b)
