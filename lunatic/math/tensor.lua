@@ -1,6 +1,6 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
-local Shape = require("lunatic.math.shape")
+local shape = require("lunatic.math.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
 arithmetic.init(tensor_factory)
@@ -28,10 +28,10 @@ function Tensor.new(data, shape)
     assert(type(data) == "table", "Tensor.new(): data must be table")
     assert(type(shape) == "table", "Tensor.new(): shape must be table")
 
-    local ok, err = Shape.is_valid(shape)
+    local ok, err = shape.is_valid(shape)
     assert(ok, err)
 
-    local size = Shape.size(shape)
+    local size = shape.size(shape)
 
     assert(#data == size,
         "Tensor.new(): data size does not match shape")
@@ -41,7 +41,7 @@ function Tensor.new(data, shape)
     self.storage = Storage.new(clone_data(data))
 
     self.shape = shape
-    self.ndim = Shape.rank(shape)
+    self.ndim = shape.rank(shape)
     self.size = size
     self.strides = Stride.compute(shape)
     self.offset = 0
@@ -189,7 +189,7 @@ function Tensor:mean()
 end
 
 --
--- Shape ops
+-- shape ops
 --
 
 function Tensor:flatten()

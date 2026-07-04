@@ -35,7 +35,7 @@ Defined initial structure. Archived
 
 ---
 
-## [0.0.2] - v0.1.0 - Tensor Core
+## v0.1.0 - Tensor Core
 ### Added
 - Introduced Tensor as the core abstraction of Lunatic
 - Implemented Storage module as a dedicated memory layer
@@ -43,6 +43,7 @@ Defined initial structure. Archived
 - Added N-dimensional indexing support through get and set
 - Introduced shape validation and consistency helpers
 - Defined elementwise operation abstraction for arithmetic operations
+- Created LAS-002 to LAS-005 documents 
 
 ### Changed
 - Tensor no longer stores raw data directly; it depends on Storage
