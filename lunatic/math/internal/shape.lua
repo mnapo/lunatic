@@ -32,6 +32,10 @@ function Shape.size(shape)
     return s
 end
 
+function Shape.rank(shape)
+    return #shape
+end
+
 function Shape.equals(a, b)
     if #a ~= #b then return false end
     for i = 1, #a do

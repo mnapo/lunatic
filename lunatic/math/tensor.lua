@@ -43,7 +43,7 @@ function Tensor.new(data_table, shape_table)
     self.shape = shape_table
     self.ndim = shape.rank(shape_table)
     self.size = size
-    self.strides = Stride.compute(shape_table)
+    self.strides = stride.compute(shape_table)
     self.offset = 0
 
     return self
