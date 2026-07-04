@@ -1,6 +1,9 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
 
+local arithmetic = require("lunatic.math.ops.arithmetic")
+arithmetic.init(tensor_factory)
+
 local Tensor = {}
 Tensor.__index = Tensor
 
@@ -182,23 +185,23 @@ end
 --
 
 function Tensor:add(other)
-    assert(same_shape(self, other), "Tensor.add(): shape mismatch")
-    return elementwise(self, other, function(x, y) return x + y end)
+    return arithmetic.add(self, other)
 end
 
 function Tensor:sub(other)
-    assert(same_shape(self, other), "Tensor.sub(): shape mismatch")
-    return elementwise(self, other, function(x, y) return x - y end)
+    return arithmetic.sub(self, other)
+end
+
+function Tensor:mul(other)
+    return arithmetic.mul(self, other)
 end
 
 function Tensor:scale(scalar)
-    local data = {}
+    return arithmetic.scale(self, scalar)
+end
 
-    for i = 1, self.size do
-        data[i] = self.storage:get(i) * scalar
-    end
-
-    return Tensor.new(data, self.shape)
+function Tensor:neg()
+    return arithmetic.neg(self)
 end
 
 --

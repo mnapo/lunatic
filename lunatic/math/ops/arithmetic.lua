@@ -1,8 +1,14 @@
 local arithmetic = {}
 
 --
--- Internal helpers
+-- Tensor Factory injection
 --
+
+arithmetic.factory = nil
+
+function arithmetic.init(factory)
+    arithmetic.factory = factory
+end
 
 local function elementwise(a, b, op)
     local size = a.size
@@ -32,54 +38,68 @@ local function elementwise_scalar(a, scalar, op)
 end
 
 --
--- Operations
+-- Guard: ensure initialization
+--
+
+local function ensure_factory()
+    assert(arithmetic.factory, "arithmetic: factory not initialized")
+end
+
+--
+-- Ops
 --
 
 function arithmetic.add(a, b)
-    -- NOTE: broadcasting will replace this in LAS-009
-    assert(a.size == b.size, "arithmetic.add: size mismatch")
+    ensure_factory()
+    assert(a.size == b.size, "add: size mismatch")
 
     local data = elementwise(a, b, function(x, y)
         return x + y
     end)
 
-    return a.__tensor_factory(data, a.shape)
+    return arithmetic.factory(data, a.shape)
 end
 
 function arithmetic.sub(a, b)
-    assert(a.size == b.size, "arithmetic.sub: size mismatch")
+    ensure_factory()
+    assert(a.size == b.size, "sub: size mismatch")
 
     local data = elementwise(a, b, function(x, y)
         return x - y
     end)
 
-    return a.__tensor_factory(data, a.shape)
+    return arithmetic.factory(data, a.shape)
 end
 
 function arithmetic.mul(a, b)
-    assert(a.size == b.size, "arithmetic.mul: size mismatch")
+    ensure_factory()
+    assert(a.size == b.size, "mul: size mismatch")
 
     local data = elementwise(a, b, function(x, y)
         return x * y
     end)
 
-    return a.__tensor_factory(data, a.shape)
+    return arithmetic.factory(data, a.shape)
 end
 
 function arithmetic.scale(a, scalar)
+    ensure_factory()
+
     local data = elementwise_scalar(a, scalar, function(x, s)
         return x * s
     end)
 
-    return a.__tensor_factory(data, a.shape)
+    return arithmetic.factory(data, a.shape)
 end
 
 function arithmetic.neg(a)
+    ensure_factory()
+
     local data = elementwise_scalar(a, 0, function(_, x)
         return -x
     end)
 
-    return a.__tensor_factory(data, a.shape)
+    return arithmetic.factory(data, a.shape)
 end
 
 return arithmetic
