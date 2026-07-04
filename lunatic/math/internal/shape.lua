@@ -1,5 +1,29 @@
 local Shape = {}
 
+function Shape.is_valid(shape)
+    if type(shape) ~= "table" then
+        return false, "shape must be a table"
+    end
+
+    for i = 1, #shape do
+        local d = shape[i]
+
+        if type(d) ~= "number" then
+            return false, ("dimension %d must be a number"):format(i)
+        end
+
+        if d % 1 ~= 0 then
+            return false, ("dimension %d must be an integer"):format(i)
+        end
+
+        if d < 0 then
+            return false, ("dimension %d must be greater than or equal to zero"):format(i)
+        end
+    end
+
+    return true
+end
+
 function Shape.size(shape)
     local s = 1
     for i = 1, #shape do

@@ -1,6 +1,6 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
-local shape = require("lunatic.math.shape")
+local shape = require("lunatic.math.internal.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
 arithmetic.init(tensor_factory)
@@ -24,26 +24,26 @@ end
 -- Constructor
 --
 
-function Tensor.new(data, shape)
-    assert(type(data) == "table", "Tensor.new(): data must be table")
-    assert(type(shape) == "table", "Tensor.new(): shape must be table")
+function Tensor.new(data_table, shape_table)
+    assert(type(data_table) == "table", "Tensor.new(): data_table must be table")
+    assert(type(shape_table) == "table", "Tensor.new(): shape_table must be table")
 
-    local ok, err = shape.is_valid(shape)
+    local ok, err = shape.is_valid(shape_table)
     assert(ok, err)
 
-    local size = shape.size(shape)
+    local size = shape.size(shape_table)
 
-    assert(#data == size,
+    assert(#data_table == size,
         "Tensor.new(): data size does not match shape")
 
     local self = setmetatable({}, Tensor)
 
-    self.storage = Storage.new(clone_data(data))
+    self.storage = Storage.new(clone_data(data_table))
 
-    self.shape = shape
-    self.ndim = shape.rank(shape)
+    self.shape = shape_table
+    self.ndim = shape.rank(shape_table)
     self.size = size
-    self.strides = Stride.compute(shape)
+    self.strides = Stride.compute(shape_table)
     self.offset = 0
 
     return self
