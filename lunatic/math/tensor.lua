@@ -1,3 +1,5 @@
+local Storage = require("lunatic.math.internal.storage")
+
 local Tensor = {}
 Tensor.__index = Tensor
 
@@ -21,6 +23,20 @@ local function clone_data(data)
     return out
 end
 
+local function same_shape(a, b)
+    if a.ndim ~= b.ndim then
+        return false
+    end
+
+    for i = 1, a.ndim do
+        if a.shape[i] ~= b.shape[i] then
+            return false
+        end
+    end
+
+    return true
+end
+
 --
 -- Constructor
 --
@@ -36,7 +52,8 @@ function Tensor.new(data, shape)
 
     local self = setmetatable({}, Tensor)
 
-    self.data = clone_data(data)
+    self.storage = Storage.new(clone_data(data))
+
     self.shape = shape
     self.ndim = #shape
     self.size = size
@@ -45,19 +62,35 @@ function Tensor.new(data, shape)
 end
 
 --
--- Access (flat for now)
+-- Getters
+--
+
+function Tensor:shape()
+    return self.shape
+end
+
+function Tensor:ndim()
+    return self.ndim
+end
+
+function Tensor:numel()
+    return self.size
+end
+
+--
+-- Access (flat for now, via storage)
 --
 
 function Tensor:get(i)
-    return self.data[i]
+    return self.storage:get(i)
 end
 
 function Tensor:set(i, value)
-    self.data[i] = value
+    self.storage:set(i, value)
 end
 
 --
--- Reshape (no copy, just view conceptually)
+-- Reshape (no copy)
 --
 
 function Tensor:reshape(new_shape)
@@ -66,7 +99,7 @@ function Tensor:reshape(new_shape)
     assert(new_size == self.size,
         "Tensor.reshape(): incompatible shape")
 
-    local t = Tensor.new(self.data, new_shape)
+    local t = Tensor.new(self.storage:raw(), new_shape)
     return t
 end
 
@@ -75,7 +108,7 @@ end
 --
 
 function Tensor:copy()
-    return Tensor.new(clone_data(self.data), self.shape)
+    return Tensor.new(self.storage:clone():raw(), self.shape)
 end
 
 --
@@ -83,64 +116,65 @@ end
 --
 
 function Tensor:map(fn)
-    local data = {}
+    local data = self.storage:raw()
+    local out = {}
 
     for i = 1, self.size do
-        data[i] = fn(self.data[i], i)
+        out[i] = fn(data[i], i)
     end
 
-    return Tensor.new(data, self.shape)
+    return Tensor.new(out, self.shape)
 end
 
 --
--- Arithmetic (element-wise)
+-- Elementwise helper
+--
+
+local function elementwise(a, b, op)
+    local data = {}
+
+    for i = 1, a.size do
+        data[i] = op(a.storage:get(i), b.storage:get(i))
+    end
+
+    return Tensor.new(data, a.shape)
+end
+
+--
+-- Arithmetic
 --
 
 function Tensor:add(other)
-    assert(self.size == other.size,
-        "Tensor.add(): size mismatch")
-
-    local data = {}
-
-    for i = 1, self.size do
-        data[i] = self.data[i] + other.data[i]
-    end
-
-    return Tensor.new(data, self.shape)
+    assert(same_shape(self, other), "Tensor.add(): shape mismatch")
+    return elementwise(self, other, function(x, y) return x + y end)
 end
 
 function Tensor:sub(other)
-    assert(self.size == other.size,
-        "Tensor.sub(): size mismatch")
-
-    local data = {}
-
-    for i = 1, self.size do
-        data[i] = self.data[i] - other.data[i]
-    end
-
-    return Tensor.new(data, self.shape)
+    assert(same_shape(self, other), "Tensor.sub(): shape mismatch")
+    return elementwise(self, other, function(x, y) return x - y end)
 end
 
 function Tensor:scale(scalar)
     local data = {}
 
     for i = 1, self.size do
-        data[i] = self.data[i] * scalar
+        data[i] = self.storage:get(i) * scalar
     end
 
     return Tensor.new(data, self.shape)
 end
 
 --
--- Reduction (basic)
+-- Reduction
 --
 
 function Tensor:sum()
     local s = 0
+
     for i = 1, self.size do
-        s = s + self.data[i]
+        s = s + self.storage:get(i)
     end
+
     return s
 end
 
@@ -153,7 +187,7 @@ end
 --
 
 function Tensor:flatten()
-    return Tensor.new(self.data, {self.size})
+    return Tensor.new(self.storage:raw(), {self.size})
 end
 
 --
@@ -177,24 +211,7 @@ function Tensor:__unm()
 end
 
 function Tensor:__tostring()
-    local s = "Tensor(shape={" .. table.concat(self.shape, ",") .. "})"
-    return s
-end
-
---
--- Getters
---
-
-function Tensor:shape()
-    return self.shape
-end
-
-function Tensor:ndim()
-    return self.ndim
-end
-
-function Tensor:numel()
-    return self.size
+    return "Tensor(shape={" .. table.concat(self.shape, ",") .. "})"
 end
 
 return Tensor
