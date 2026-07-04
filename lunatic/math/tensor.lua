@@ -1,5 +1,5 @@
 local Storage = require("lunatic.math.internal.storage")
-local Stride = require("lunatic.math.internal.stride")
+local stride = require("lunatic.math.internal.stride")
 
 local Tensor = {}
 Tensor.__index = Tensor
