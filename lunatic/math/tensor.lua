@@ -181,4 +181,20 @@ function Tensor:__tostring()
     return s
 end
 
+--
+-- Getters
+--
+
+function Tensor:shape()
+    return self.shape
+end
+
+function Tensor:ndim()
+    return self.ndim
+end
+
+function Tensor:numel()
+    return self.size
+end
+
 return Tensor
