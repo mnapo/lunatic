@@ -1,6 +1,6 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
-local shape = require("lunatic.math.internal.shape")
+local shape = require("lunatic.math.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
 

@@ -1,4 +1,6 @@
-local shape = require("lunatic.math.internal.shape")
+local shape = require("lunatic.math.shape")
+local broadcast = require("lunatic.math.broadcast")
+
 local arithmetic = {}
 
 --
@@ -107,7 +109,7 @@ end
 function arithmetic.add(a, b)
     ensure_factory()
 
-    local out_shape = resolve_broadcast_shape(a.shape, b.shape)
+    local out_shape = broadcast.resolve(a.shape, b.shape)
 
     local data = {}
 
