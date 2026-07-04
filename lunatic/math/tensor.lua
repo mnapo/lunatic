@@ -1,7 +1,7 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
 local Shape = require("lunatic.math.shape")
-
+local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
 arithmetic.init(tensor_factory)
 
@@ -18,21 +18,6 @@ local function clone_data(data)
         out[i] = data[i]
     end
     return out
-end
-
-local function compute_index(t, indexes)
-    assert(#indexes == t.ndim, "Tensor:get(): wrong number of indexes")
-
-    local idx = t.offset or 0
-
-    for i = 1, t.ndim do
-        local v = indexes[i]
-        assert(v >= 1 and v <= t.shape[i], "Tensor:get(): index out of bounds")
-
-        idx = idx + (v - 1) * t.strides[i]
-    end
-
-    return idx + 1 -- Lua 1-based
 end
 
 --
@@ -87,12 +72,11 @@ end
 function Tensor:get(...)
     local indexes = { ... }
 
-    -- backward compatible flat access
     if #indexes == 1 then
         return self.storage:get(indexes[1])
     end
 
-    local index = compute_index(self, indexes)
+    local index = indexing.to_flat_index(self, indexes)
     return self.storage:get(index)
 end
 
@@ -107,7 +91,7 @@ function Tensor:set(...)
         return
     end
 
-    local index = compute_index(self, args)
+    local index = indexing.to_flat_index(self, args)
     self.storage:set(index, value)
 end
 
