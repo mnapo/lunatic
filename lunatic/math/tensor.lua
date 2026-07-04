@@ -1,5 +1,6 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
+local Shape = require("lunatic.math.shape")
 
 local arithmetic = require("lunatic.math.ops.arithmetic")
 arithmetic.init(tensor_factory)
@@ -11,34 +12,12 @@ Tensor.__index = Tensor
 -- Helpers
 --
 
-local function product(shape)
-    local p = 1
-    for i = 1, #shape do
-        p = p * shape[i]
-    end
-    return p
-end
-
 local function clone_data(data)
     local out = {}
     for i = 1, #data do
         out[i] = data[i]
     end
     return out
-end
-
-local function same_shape(a, b)
-    if a.ndim ~= b.ndim then
-        return false
-    end
-
-    for i = 1, a.ndim do
-        if a.shape[i] ~= b.shape[i] then
-            return false
-        end
-    end
-
-    return true
 end
 
 local function compute_index(t, indexes)
@@ -64,7 +43,10 @@ function Tensor.new(data, shape)
     assert(type(data) == "table", "Tensor.new(): data must be table")
     assert(type(shape) == "table", "Tensor.new(): shape must be table")
 
-    local size = product(shape)
+    local ok, err = Shape.is_valid(shape)
+    assert(ok, err)
+
+    local size = Shape.size(shape)
 
     assert(#data == size,
         "Tensor.new(): data size does not match shape")
@@ -74,7 +56,7 @@ function Tensor.new(data, shape)
     self.storage = Storage.new(clone_data(data))
 
     self.shape = shape
-    self.ndim = #shape
+    self.ndim = Shape.rank(shape)
     self.size = size
     self.strides = Stride.compute(shape)
     self.offset = 0
