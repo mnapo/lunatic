@@ -1,4 +1,5 @@
 local Storage = require("lunatic.math.internal.storage")
+local Stride = require("lunatic.math.internal.stride")
 
 local Tensor = {}
 Tensor.__index = Tensor
@@ -57,6 +58,8 @@ function Tensor.new(data, shape)
     self.shape = shape
     self.ndim = #shape
     self.size = size
+    self.strides = Stride.compute(shape)
+    self.offset = 0
 
     return self
 end
