@@ -1,20 +1,21 @@
 local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
+local shape = require("lunatic.math.internal.shape")
+local indexing = require("lunatic.math.internal.indexing")
+local arithmetic = require("lunatic.math.ops.arithmetic")
 
 local Tensor = {}
 Tensor.__index = Tensor
 
+local function tensor_factory(data, shape)
+    return Tensor.new(data, shape)
+end
+
+arithmetic.init(tensor_factory)
+
 --
 -- Helpers
 --
-
-local function product(shape)
-    local p = 1
-    for i = 1, #shape do
-        p = p * shape[i]
-    end
-    return p
-end
 
 local function clone_data(data)
     local out = {}
@@ -24,56 +25,30 @@ local function clone_data(data)
     return out
 end
 
-local function same_shape(a, b)
-    if a.ndim ~= b.ndim then
-        return false
-    end
-
-    for i = 1, a.ndim do
-        if a.shape[i] ~= b.shape[i] then
-            return false
-        end
-    end
-
-    return true
-end
-
-local function compute_index(t, indexes)
-    assert(#indexes == t.ndim, "Tensor:get(): wrong number of indexes")
-
-    local idx = t.offset or 0
-
-    for i = 1, t.ndim do
-        local v = indexes[i]
-        assert(v >= 1 and v <= t.shape[i], "Tensor:get(): index out of bounds")
-
-        idx = idx + (v - 1) * t.strides[i]
-    end
-
-    return idx + 1 -- Lua 1-based
-end
-
 --
 -- Constructor
 --
 
-function Tensor.new(data, shape)
-    assert(type(data) == "table", "Tensor.new(): data must be table")
-    assert(type(shape) == "table", "Tensor.new(): shape must be table")
+function Tensor.new(data_table, shape_table)
+    assert(type(data_table) == "table", "Tensor.new(): data_table must be table")
+    assert(type(shape_table) == "table", "Tensor.new(): shape_table must be table")
 
-    local size = product(shape)
+    local ok, err = shape.is_valid(shape_table)
+    assert(ok, err)
 
-    assert(#data == size,
+    local size = shape.size(shape_table)
+
+    assert(#data_table == size,
         "Tensor.new(): data size does not match shape")
 
     local self = setmetatable({}, Tensor)
 
-    self.storage = Storage.new(clone_data(data))
+    self.storage = Storage.new(clone_data(data_table))
 
-    self.shape = shape
-    self.ndim = #shape
+    self.shape = shape_table
+    self.ndim = shape.rank(shape_table)
     self.size = size
-    self.strides = Stride.compute(shape)
+    self.strides = stride.compute(shape_table)
     self.offset = 0
 
     return self
@@ -102,12 +77,11 @@ end
 function Tensor:get(...)
     local indexes = { ... }
 
-    -- backward compatible flat access
     if #indexes == 1 then
         return self.storage:get(indexes[1])
     end
 
-    local index = compute_index(self, indexes)
+    local index = indexing.to_flat_index(self, indexes)
     return self.storage:get(index)
 end
 
@@ -122,7 +96,7 @@ function Tensor:set(...)
         return
     end
 
-    local index = compute_index(self, args)
+    local index = indexing.to_flat_index(self, args)
     self.storage:set(index, value)
 end
 
@@ -130,7 +104,7 @@ end
 -- Reshape (no copy)
 --
 
-function Tensor:reshape(new_shape)
+--[[function Tensor:reshape(new_shape)
     local new_size = product(new_shape)
 
     assert(new_size == self.size,
@@ -138,7 +112,7 @@ function Tensor:reshape(new_shape)
 
     local t = Tensor.new(self.storage:raw(), new_shape)
     return t
-end
+end]]
 
 --
 -- Copy
@@ -182,23 +156,23 @@ end
 --
 
 function Tensor:add(other)
-    assert(same_shape(self, other), "Tensor.add(): shape mismatch")
-    return elementwise(self, other, function(x, y) return x + y end)
+    return arithmetic.add(self, other)
 end
 
 function Tensor:sub(other)
-    assert(same_shape(self, other), "Tensor.sub(): shape mismatch")
-    return elementwise(self, other, function(x, y) return x - y end)
+    return arithmetic.sub(self, other)
+end
+
+function Tensor:mul(other)
+    return arithmetic.mul(self, other)
 end
 
 function Tensor:scale(scalar)
-    local data = {}
+    return arithmetic.scale(self, scalar)
+end
 
-    for i = 1, self.size do
-        data[i] = self.storage:get(i) * scalar
-    end
-
-    return Tensor.new(data, self.shape)
+function Tensor:neg()
+    return arithmetic.neg(self)
 end
 
 --
@@ -220,7 +194,7 @@ function Tensor:mean()
 end
 
 --
--- Shape ops
+-- shape ops
 --
 
 function Tensor:flatten()

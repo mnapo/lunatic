@@ -26,7 +26,7 @@ Lunatic is evolving into a modern AI ecosystem for Lua, focused on simplicity, c
 ## V0.2.0 — Full Tensor system
 
 - Broadcasting rules
-- Shape system unification (Vector/Matrix → Tensor view)
+- Shape system unification (Vector/Matrix -> Tensor view)
 - Backend abstraction (initial CPU Lua backend)
 - Performance-aware design (still CPU-first)
 
