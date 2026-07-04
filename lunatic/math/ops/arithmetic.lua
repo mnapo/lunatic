@@ -1,4 +1,7 @@
-local shape = require("lunatic.math.internal.shape")
+local indexing = require("lunatic.math.internal.indexing")
+local broadcast = require("lunatic.math.broadcast")
+local shape = require("lunatic.math.shape")
+
 local arithmetic = {}
 
 --
@@ -14,56 +17,6 @@ end
 --
 -- Helpers
 --
-
-local function align_shapes(a_shape, b_shape)
-    local max_dim = math.max(#a_shape, #b_shape)
-
-    local A = shape.normalize(a_shape, max_dim)
-    local B = shape.normalize(b_shape, max_dim)
-
-    return A, B
-end
-
-local function resolve_broadcast_shape(a_shape, b_shape)
-    local A, B = align_shapes(a_shape, b_shape)
-
-    local result = {}
-
-    for i = 1, #A do
-        if A[i] == B[i] then
-            result[i] = A[i]
-        elseif A[i] == 1 then
-            result[i] = B[i]
-        elseif B[i] == 1 then
-            result[i] = A[i]
-        else
-            error("Broadcast error: incompatible shapes")
-        end
-    end
-
-    return result
-end
-
-local function map_index(out_idx, shape, target_shape)
-    local idx_a = {}
-    local idx_b = {}
-
-    for i = 1, #shape do
-        if target_shape[i] == 1 then
-            idx_a[i] = 1
-        else
-            idx_a[i] = out_idx[i]
-        end
-
-        if target_shape[i] == 1 then
-            idx_b[i] = 1
-        else
-            idx_b[i] = out_idx[i]
-        end
-    end
-
-    return idx_a, idx_b
-end
 
 local function elementwise(a, b, op)
     local size = a.size
@@ -107,32 +60,33 @@ end
 function arithmetic.add(a, b)
     ensure_factory()
 
-    local out_shape = resolve_broadcast_shape(a.shape, b.shape)
+    local out_shape = Broadcast.resolve(a.shape, b.shape)
+    local out_size = Shape.size(out_shape)
 
     local data = {}
 
-    local max_size = shape.size(out_shape)
+    for i = 1, out_size do
 
-    for i = 1, max_size do
+        -- output linear -> multi-index
+        local out_idx = indexing.unravel(out_shape, i)
 
-        -- convert linear index to multi-index (via strides-like expansion)
-        local idx = i - 1
+        -- broadcast mapping
+        local idxA, idxB = broadcast.map_index(
+            out_idx,
+            a.shape,
+            b.shape,
+            out_shape
+        )
 
-        local a_val, b_val
+        -- multi-index -> linear index
+        local linA = indexing.compute(a.shape, a.strides, a.offset, idxA)
+        local linB = indexing.compute(b.shape, b.strides, b.offset, idxB)
 
-        if a.size == 1 then
-            a_val = a.storage:get(1)
-        else
-            a_val = a.storage:get(i)
-        end
+        -- access storage
+        local va = a.storage:get(linA)
+        local vb = b.storage:get(linB)
 
-        if b.size == 1 then
-            b_val = b.storage:get(1)
-        else
-            b_val = b.storage:get(i)
-        end
-
-        data[i] = a_val + b_val
+        data[i] = va + vb
     end
 
     return arithmetic.factory(data, out_shape)
