@@ -92,5 +92,91 @@ local function test_tensor_operations()
     assert_equals(neg:get(4), -4, "tensor negation [4]")
 end
 
+local function test_new_api_methods()
+    local Tensor = lunatic.math.Tensor
+
+    -- Test :add() method (as opposed to + operator)
+    local t1_data = {1, 2, 3, 4}
+    local t1 = Tensor.new(t1_data, {2, 2})
+    local t2_data = {5, 6, 7, 8}
+    local t2 = Tensor.new(t2_data, {2, 2})
+    
+    local sum_method = t1:add(t2)
+    assert_equals(sum_method:get(1), 6, "tensor :add() method [1]")
+    assert_equals(sum_method:get(2), 8, "tensor :add() method [2]")
+    assert_equals(sum_method:get(4), 12, "tensor :add() method [4]")
+
+    -- Test :sub() method (as opposed to - operator)
+    local diff_method = t2:sub(t1)
+    assert_equals(diff_method:get(1), 4, "tensor :sub() method [1]")
+    assert_equals(diff_method:get(2), 4, "tensor :sub() method [2]")
+    assert_equals(diff_method:get(4), 4, "tensor :sub() method [4]")
+
+    -- Test multi-dimensional indexing with :set() and :get()
+    local t3_data = {1, 2, 3, 4, 5, 6}
+    local t3 = Tensor.new(t3_data, {2, 3})
+    t3:set(1, 2, 99)  -- Set element at [1,2]
+    assert_equals(t3:get(1, 2), 99, "tensor multi-dim set/get [1,2]")
+    
+    -- Verify original [1,1] unchanged
+    assert_equals(t3:get(1, 1), 1, "tensor multi-dim get [1,1]")
+    
+    -- Verify flat access still works on same tensor
+    assert_equals(t3:get(2), 99, "tensor multi-dim flat access after set")
+
+    -- Test :scale() with larger tensor
+    local t4_data = {1, 2, 3}
+    local t4 = Tensor.new(t4_data, {3})
+    local scaled = t4:scale(3)
+    assert_equals(scaled:get(1), 3, "tensor :scale() [1]")
+    assert_equals(scaled:get(2), 6, "tensor :scale() [2]")
+    assert_equals(scaled:get(3), 9, "tensor :scale() [3]")
+
+    print("new API methods test passed")
+end
+
+local function test_backward_compatibility()
+    local Tensor = lunatic.math.Tensor
+
+    -- Create tensor using new API
+    local data = {1, 2, 3, 4, 5, 6}
+    local t = Tensor.new(data, {2, 3})
+
+    -- Verify old flat access still works
+    assert_equals(t:get(1), 1, "backward compat: flat get [1]")
+    assert_equals(t:get(2), 2, "backward compat: flat get [2]")
+    assert_equals(t:get(6), 6, "backward compat: flat get [6]")
+
+    -- Verify old flat set still works
+    t:set(3, 99)
+    assert_equals(t:get(3), 99, "backward compat: flat set/get")
+
+    -- Verify metamethods work alongside new methods
+    local t1_data = {1, 2, 3, 4}
+    local t1 = Tensor.new(t1_data, {2, 2})
+    local t2_data = {1, 1, 1, 1}
+    local t2 = Tensor.new(t2_data, {2, 2})
+
+    -- Using + operator
+    local sum_operator = t1 + t2
+    assert_equals(sum_operator:get(1), 2, "backward compat: + operator")
+
+    -- Using :add() method
+    local sum_method = t1:add(t2)
+    assert_equals(sum_method:get(1), 2, "backward compat: :add() method same result")
+
+    -- Both should produce same result
+    assert_equals(sum_operator:get(4), sum_method:get(4), "backward compat: + operator vs :add() consistency")
+
+    -- Verify that old property access still works
+    assert_equals(t1.size, 4, "backward compat: .size property")
+    assert_equals(t1.ndim, 2, "backward compat: .ndim property")
+    assert_equals(t1.shape[1], 2, "backward compat: .shape property")
+
+    print("backward compatibility test passed")
+end
+
 test_tensor_operations()
-print("tensor operations test passed")
+test_new_api_methods()
+test_backward_compatibility()
+print("all tensor operations tests passed")
