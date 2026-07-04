@@ -99,12 +99,31 @@ end
 -- Access (flat for now, via storage)
 --
 
-function Tensor:get(i)
-    return self.storage:get(i)
+function Tensor:get(...)
+    local indexes = { ... }
+
+    -- backward compatible flat access
+    if #indexes == 1 then
+        return self.storage:get(indexes[1])
+    end
+
+    local index = compute_index(self, indexes)
+    return self.storage:get(index)
 end
 
-function Tensor:set(i, value)
-    self.storage:set(i, value)
+function Tensor:set(...)
+    local args = { ... }
+
+    local value = args[#args]
+    table.remove(args, #args)
+
+    if #args == 1 then
+        self.storage:set(args[1], value)
+        return
+    end
+
+    local index = compute_index(self, args)
+    self.storage:set(index, value)
 end
 
 --
