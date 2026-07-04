@@ -26,28 +26,39 @@ local function elementwise(a, b, op)
 
     local data = {}
 
-    for i = 1, out_size do
+    -- normalize shapes to output ndim and build normalized strides
+    local ndim = #out_shape
+    local A = shape.normalize(a.shape, ndim)
+    local B = shape.normalize(b.shape, ndim)
 
-        -- 1. output linear → multi-index
+    local function normalize_strides(tensor, norm_shape)
+        local out = {}
+        local orig_ndim = #tensor.shape
+        for i = 1, #norm_shape do
+            local orig_idx = orig_ndim - #norm_shape + i
+            if orig_idx >= 1 then
+                out[i] = tensor.strides[orig_idx]
+            else
+                out[i] = 0
+            end
+        end
+        return out
+    end
+
+    local stridesA = normalize_strides(a, A)
+    local stridesB = normalize_strides(b, B)
+
+    for i = 1, out_size do
         local out_idx = indexing.unravel(out_shape, i)
 
-        -- 2. broadcast mapping
-        local idxA, idxB = broadcast.map_index(
-            out_idx,
-            a.shape,
-            b.shape,
-            out_shape
-        )
+        local idxA, idxB = broadcast.map_index(out_idx, a.shape, b.shape, out_shape)
 
-        -- 3. multi-index → linear index
-        local linA = indexing.compute(a.shape, a.strides, a.offset, idxA)
-        local linB = indexing.compute(b.shape, b.strides, b.offset, idxB)
+        local linA = indexing.compute(A, stridesA, a.offset, idxA)
+        local linB = indexing.compute(B, stridesB, b.offset, idxB)
 
-        -- 4. value access
         local va = a.storage:get(linA)
         local vb = b.storage:get(linB)
 
-        -- 5. apply op
         data[i] = op(va, vb)
     end
 
