@@ -15,20 +15,16 @@ Lunatic is evolving into a modern AI ecosystem for Lua, focused on simplicity, c
 
 ---
 
-## V0.1.0 — Core math completion
+## V0.1.0 — Tensor system preparation
 
-- Linalg module (basic operations)
-- Statistics utilities
-- Random generation utilities
-- Constants module
-- Stabilization of Vector/Matrix API
-- Preparation layer for Tensor
+- N-dimensional Tensor implementation
+- Storage for Tensors' data
+- Strides
 
 ---
 
-## V0.2.0 — Tensor system
+## V0.2.0 — Full Tensor system
 
-- N-dimensional Tensor implementation
 - Broadcasting rules
 - Shape system unification (Vector/Matrix → Tensor view)
 - Backend abstraction (initial CPU Lua backend)
