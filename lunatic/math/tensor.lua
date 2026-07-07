@@ -28,7 +28,7 @@ local function clone_data(data)
 end
 
 --
--- Constructor
+-- Construction logic
 --
 
 function Tensor.new(data_table, shape_table)
@@ -52,6 +52,20 @@ function Tensor.new(data_table, shape_table)
     self.size = size
     self.strides = stride.compute(shape_table)
     self.offset = 0
+
+    return self
+end
+
+function Tensor._from_storage(storage, shape, offset)
+    local self = setmetatable({}, Tensor)
+
+    self.storage = storage
+
+    self.shape = shape
+    self.ndim = #shape
+    self.size = product(shape)
+    self.strides = Stride.compute(shape)
+    self.offset = offset or 0
 
     return self
 end
@@ -103,18 +117,27 @@ function Tensor:set(...)
 end
 
 --
--- Reshape (no copy)
+-- Shape ops (without copy)
 --
 
---[[function Tensor:reshape(new_shape)
+function Tensor:reshape(new_shape)
     local new_size = product(new_shape)
 
-    assert(new_size == self.size,
-        "Tensor.reshape(): incompatible shape")
+    assert(
+        new_size == self.size,
+        "Tensor.reshape(): incompatible shape"
+    )
 
-    local t = Tensor.new(self.storage:raw(), new_shape)
-    return t
-end]]
+    return Tensor._from_storage(
+        self.storage,
+        new_shape,
+        self.offset
+    )
+end
+
+function Tensor:flatten()
+    return self:reshape({self.size})
+end
 
 --
 -- Copy
@@ -187,14 +210,6 @@ end
 
 function Tensor:mean(...)
     return reduction.mean(self, ...)
-end
-
---
--- shape ops
---
-
-function Tensor:flatten()
-    return Tensor.new(self.storage:raw(), {self.size})
 end
 
 --
