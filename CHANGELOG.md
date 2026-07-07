@@ -35,7 +35,7 @@ Defined initial structure. Archived
 
 ---
 
-## v0.1.0 - Tensor Core
+## [v0.1.0] - Tensor Core
 ### Added
 - Introduced Tensor as the core abstraction of Lunatic
 - Implemented Storage module as a dedicated memory layer
@@ -74,10 +74,25 @@ This version establishes the foundation for:
 - Broadcasting system
 - Future autograd integration
 
----
 
 ### Notes
 
 - This release focuses on architecture definition, not functionality completeness
 - APIs are experimental and may change in future versions
 - Math layer is intentionally minimal and Tensor-oriented by design
+
+---
+
+## [v0.2-0] - Broadcasting and tensor math improvements
+
+### Added
+- Implemented broadcasting support for elementwise tensor operations with compatible shapes
+- Added broadcast resolution and index-mapping helpers for scalar, vector, and matrix cases
+- Added support for singleton-dimension broadcasting and zero-size tensor handling
+- Added regression and edge-case tests for incompatible shapes, scalar-to-matrix operations, singleton middle dimensions, and empty tensors
+- Added a benchmark harness and Markdown report under the benches folder to document broadcasting performance
+
+### Changed
+- Arithmetic operations now accept broadcast-compatible tensors instead of requiring identical shapes
+- Tensor math behavior was expanded to cover common broadcasting scenarios in a predictable way
+- Benchmarking and validation coverage were added to track correctness and performance of broadcasting paths
