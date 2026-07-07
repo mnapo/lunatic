@@ -181,18 +181,12 @@ end
 -- Reduction
 --
 
-function Tensor:sum()
-    local s = 0
-
-    for i = 1, self.size do
-        s = s + self.storage:get(i)
-    end
-
-    return s
+function Tensor:sum(...)
+    return reduction.sum(self, ...)
 end
 
-function Tensor:mean()
-    return self:sum() / self.size
+function Tensor:mean(...)
+    return reduction.mean(self, ...)
 end
 
 --
