@@ -27,6 +27,12 @@ local function clone_data(data)
     return out
 end
 
+local function init_autograd(self)
+    self.requires_grad = false
+    self.grad = nil
+    self.grad_fn = nil
+end
+
 --
 -- Construction logic
 --
@@ -56,7 +62,7 @@ function Tensor.new(data_table, shape_table)
     return self
 end
 
-function Tensor._from_storage(storage, shape_table, offset)
+function Tensor._from_storage(storage, shape_table, offset, autograd)
     local self = setmetatable({}, Tensor)
 
     self.storage = storage
@@ -67,11 +73,19 @@ function Tensor._from_storage(storage, shape_table, offset)
     self.strides = stride.compute(shape_table)
     self.offset = offset or 0
 
+    if autograd then
+        self.requires_grad = autograd.requires_grad
+        self.grad = autograd.grad
+        self.grad_fn = autograd.grad_fn
+    else
+        init_autograd(self)
+    end
+
     return self
 end
 
 --
--- Getters
+-- Getters/Setters
 --
 
 function Tensor:shape()
@@ -84,6 +98,14 @@ end
 
 function Tensor:numel()
     return self.size
+end
+
+function Tensor:set_requires_grad(value)
+    self.requires_grad = value
+end
+
+function Tensor:zero_grad()
+    self.grad = nil
 end
 
 --
@@ -131,7 +153,12 @@ function Tensor:reshape(new_shape)
     return Tensor._from_storage(
         self.storage,
         new_shape,
-        self.offset
+        self.offset,
+        {
+            requires_grad = self.requires_grad,
+            grad = self.grad,
+            grad_fn = self.grad_fn
+        }
     )
 end
 
