@@ -4,6 +4,7 @@ local shape = require("lunatic.math.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
 local reduction = require("lunatic.math.ops.reduction")
+local engine = require("lunatic.math.autograd.engine")
 
 local Tensor = {}
 Tensor.__index = Tensor
@@ -261,6 +262,23 @@ end
 
 function Tensor:__tostring()
     return "Tensor(shape={" .. table.concat(self.shape, ",") .. "})"
+end
+
+--
+-- Autograd methods
+--
+
+function Tensor:backward(gradient)
+
+    if gradient == nil then
+        gradient = Tensor.new({1}, {1})
+    end
+
+    engine.backward(
+        self,
+        gradient
+    )
+
 end
 
 return Tensor
