@@ -136,6 +136,29 @@ local function test_new_api_methods()
     print("new API methods test passed")
 end
 
+local function test_add_autograd()
+    local Tensor = lunatic.math.Tensor
+
+    local a = Tensor.new({1, 2}, {2})
+    local b = Tensor.new({3, 4}, {2})
+
+    a:set_requires_grad(true)
+    b:set_requires_grad(true)
+
+    local c = a + b
+
+    assert(c.requires_grad == true, "add autograd: result requires grad")
+    assert(c.grad_fn ~= nil, "add autograd: result has grad fn")
+
+    local grad = Tensor.new({1, 1}, {2})
+    c:backward(grad)
+
+    assert_equals(a.grad:get(1), 1, "add autograd: left gradient [1]")
+    assert_equals(a.grad:get(2), 1, "add autograd: left gradient [2]")
+    assert_equals(b.grad:get(1), 1, "add autograd: right gradient [1]")
+    assert_equals(b.grad:get(2), 1, "add autograd: right gradient [2]")
+end
+
 local function test_backward_compatibility()
     local Tensor = lunatic.math.Tensor
 
@@ -179,5 +202,6 @@ end
 
 test_tensor_operations()
 test_new_api_methods()
+test_add_autograd()
 test_backward_compatibility()
 print("all tensor operations tests passed")

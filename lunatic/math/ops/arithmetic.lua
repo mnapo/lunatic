@@ -1,6 +1,8 @@
 local shape = require("lunatic.math.shape")
 local broadcast = require("lunatic.math.broadcast")
 local indexing = require("lunatic.math.internal.indexing")
+local Node = require("lunatic.math.autograd.node")
+local Context = require("lunatic.math.autograd.context")
 
 local arithmetic = {}
 
@@ -12,6 +14,40 @@ end
 
 local function ensure_factory()
     assert(arithmetic.factory, "arithmetic: factory not initialized")
+end
+
+--
+-- Autograd helpers
+--
+
+local function attach_grad_fn(result, operation, inputs, backward_fn)
+
+    if not Context.is_enabled() then
+        return result
+    end
+    
+    local requires_grad = false
+
+    for _, tensor in ipairs(inputs) do
+        if tensor.requires_grad then
+            requires_grad = true
+            break
+        end
+    end
+
+    if not requires_grad then
+        return result
+    end
+
+    result.requires_grad = true
+
+    result.grad_fn = Node.new(
+        operation,
+        inputs,
+        backward_fn
+    )
+
+    return result
 end
 
 --
@@ -88,7 +124,30 @@ end
 --
 
 function arithmetic.add(a, b)
-    return elementwise(a, b, function(x, y) return x + y end)
+
+    local result = elementwise(
+        a,
+        b,
+        function(x, y)
+            return x + y
+        end
+    )
+
+    return attach_grad_fn(
+        result,
+        "add",
+        {a, b},
+
+        function(gradient)
+
+            return {
+                gradient,
+                gradient
+            }
+
+        end
+    )
+
 end
 
 function arithmetic.sub(a, b)
