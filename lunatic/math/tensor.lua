@@ -3,6 +3,7 @@ local stride = require("lunatic.math.internal.stride")
 local shape = require("lunatic.math.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
+local reduction = require("lunatic.math.ops.reduction")
 
 local Tensor = {}
 Tensor.__index = Tensor
@@ -12,6 +13,7 @@ local function tensor_factory(data, shape)
 end
 
 arithmetic.init(tensor_factory)
+reduction.init(tensor_factory)
 
 --
 -- Helpers
