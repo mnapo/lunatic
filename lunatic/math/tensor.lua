@@ -52,6 +52,9 @@ function Tensor.new(data_table, shape_table)
     self.size = size
     self.strides = stride.compute(shape_table)
     self.offset = 0
+    self.requires_grad = false,
+    self.grad = nil,
+    self.grad_fn = nil
 
     return self
 end
@@ -71,7 +74,7 @@ function Tensor._from_storage(storage, shape_table, offset)
 end
 
 --
--- Getters
+-- Getters/Setters
 --
 
 function Tensor:shape()
@@ -84,6 +87,14 @@ end
 
 function Tensor:numel()
     return self.size
+end
+
+function Tensor:set_requires_grad(value)
+    self.requires_grad = value
+end
+
+function Tensor:zero_grad()
+    self.grad = nil
 end
 
 --
