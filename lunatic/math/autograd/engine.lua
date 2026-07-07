@@ -1,3 +1,5 @@
+local Context = require("lunatic.math.autograd.context")
+
 local Engine = {}
 
 function Engine.backward(tensor, gradient)
@@ -9,7 +11,11 @@ function Engine.backward(tensor, gradient)
 
     local node = tensor.grad_fn
 
+    Context.disable()
+
     local gradients = node:backward(gradient)
+
+    Context.enable()
 
     for i, input in ipairs(node.inputs) do
 
