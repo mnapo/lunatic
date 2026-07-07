@@ -3,6 +3,7 @@ local stride = require("lunatic.math.internal.stride")
 local shape = require("lunatic.math.shape")
 local indexing = require("lunatic.math.internal.indexing")
 local arithmetic = require("lunatic.math.ops.arithmetic")
+local reduction = require("lunatic.math.ops.reduction")
 
 local Tensor = {}
 Tensor.__index = Tensor
@@ -12,6 +13,7 @@ local function tensor_factory(data, shape)
 end
 
 arithmetic.init(tensor_factory)
+reduction.init(tensor_factory)
 
 --
 -- Helpers
@@ -26,7 +28,7 @@ local function clone_data(data)
 end
 
 --
--- Constructor
+-- Construction logic
 --
 
 function Tensor.new(data_table, shape_table)
@@ -50,6 +52,20 @@ function Tensor.new(data_table, shape_table)
     self.size = size
     self.strides = stride.compute(shape_table)
     self.offset = 0
+
+    return self
+end
+
+function Tensor._from_storage(storage, shape_table, offset)
+    local self = setmetatable({}, Tensor)
+
+    self.storage = storage
+
+    self.shape = shape_table
+    self.ndim = #shape_table
+    self.size = shape.size(shape_table)
+    self.strides = stride.compute(shape_table)
+    self.offset = offset or 0
 
     return self
 end
@@ -101,18 +117,27 @@ function Tensor:set(...)
 end
 
 --
--- Reshape (no copy)
+-- Shape ops (without copy)
 --
 
---[[function Tensor:reshape(new_shape)
-    local new_size = product(new_shape)
+function Tensor:reshape(new_shape)
+    local new_size = shape.size(new_shape)
 
-    assert(new_size == self.size,
-        "Tensor.reshape(): incompatible shape")
+    assert(
+        new_size == self.size,
+        "Tensor.reshape(): incompatible shape"
+    )
 
-    local t = Tensor.new(self.storage:raw(), new_shape)
-    return t
-end]]
+    return Tensor._from_storage(
+        self.storage,
+        new_shape,
+        self.offset
+    )
+end
+
+function Tensor:flatten()
+    return self:reshape({self.size})
+end
 
 --
 -- Copy
@@ -179,26 +204,12 @@ end
 -- Reduction
 --
 
-function Tensor:sum()
-    local s = 0
-
-    for i = 1, self.size do
-        s = s + self.storage:get(i)
-    end
-
-    return s
+function Tensor:sum(...)
+    return reduction.sum(self, ...)
 end
 
-function Tensor:mean()
-    return self:sum() / self.size
-end
-
---
--- shape ops
---
-
-function Tensor:flatten()
-    return Tensor.new(self.storage:raw(), {self.size})
+function Tensor:mean(...)
+    return reduction.mean(self, ...)
 end
 
 --
