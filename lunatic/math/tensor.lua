@@ -56,15 +56,15 @@ function Tensor.new(data_table, shape_table)
     return self
 end
 
-function Tensor._from_storage(storage, shape, offset)
+function Tensor._from_storage(storage, shape_table, offset)
     local self = setmetatable({}, Tensor)
 
     self.storage = storage
 
-    self.shape = shape
-    self.ndim = #shape
-    self.size = product(shape)
-    self.strides = Stride.compute(shape)
+    self.shape = shape_table
+    self.ndim = #shape_table
+    self.size = shape.size(shape_table)
+    self.strides = stride.compute(shape_table)
     self.offset = offset or 0
 
     return self
@@ -121,7 +121,7 @@ end
 --
 
 function Tensor:reshape(new_shape)
-    local new_size = product(new_shape)
+    local new_size = shape.size(new_shape)
 
     assert(
         new_size == self.size,
