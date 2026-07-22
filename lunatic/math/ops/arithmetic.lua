@@ -3,6 +3,7 @@ local broadcast = require("lunatic.math.broadcast")
 local indexing = require("lunatic.math.internal.indexing")
 local Node = require("lunatic.math.autograd.node")
 local Context = require("lunatic.math.autograd.context")
+local AddGrad = require("lunatic.math.autograd.functions.add")
 
 local arithmetic = {}
 
@@ -141,15 +142,7 @@ function arithmetic.add(a, b)
         result,
         "add",
         {a, b},
-
-        function(gradient)
-
-            return {
-                gradient,
-                gradient
-            }
-
-        end
+        AddGrad.backward
     )
 
 end
