@@ -252,6 +252,14 @@ function Tensor:__add(other)
     return self:add(other)
 end
 
+function Tensor:__mul(other)
+    return self:mul(other)
+end
+
+function Tensor:__div(other)
+    return arithmetic.div(self, other)
+end
+
 function Tensor:__sub(other)
     return self:sub(other)
 end
