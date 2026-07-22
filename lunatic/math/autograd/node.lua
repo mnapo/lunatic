@@ -17,16 +17,21 @@ function Node.new(operation, inputs, backward_fn)
     self.operation = operation
     self.inputs = inputs
     self.backward_fn = backward_fn
+    self.output = nil
 
     return self
 end
 
+function Node:set_output(tensor)
+    self.output = tensor
+end
 
 function Node:backward(gradient)
 
     return self.backward_fn(
         gradient,
-        self.inputs
+        self.inputs,
+        self.output
     )
 
 end
