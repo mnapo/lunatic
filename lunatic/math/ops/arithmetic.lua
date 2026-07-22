@@ -41,11 +41,15 @@ local function attach_grad_fn(result, operation, inputs, backward_fn)
 
     result.requires_grad = true
 
-    result.grad_fn = Node.new(
+    local node = Node.new(
         operation,
         inputs,
         backward_fn
     )
+
+    node:set_output(result)
+
+    result.grad_fn = node
 
     return result
 end
