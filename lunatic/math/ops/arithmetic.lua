@@ -3,6 +3,8 @@ local broadcast = require("lunatic.math.broadcast")
 local indexing = require("lunatic.math.internal.indexing")
 local Node = require("lunatic.math.autograd.node")
 local Context = require("lunatic.math.autograd.context")
+local AddGrad = require("lunatic.math.autograd.functions.add")
+local MulGrad = require("lunatic.math.autograd.functions.mul")
 
 local arithmetic = {}
 
@@ -141,15 +143,7 @@ function arithmetic.add(a, b)
         result,
         "add",
         {a, b},
-
-        function(gradient)
-
-            return {
-                gradient,
-                gradient
-            }
-
-        end
+        AddGrad.backward
     )
 
 end
@@ -159,7 +153,22 @@ function arithmetic.sub(a, b)
 end
 
 function arithmetic.mul(a, b)
-    return elementwise(a, b, function(x, y) return x * y end)
+
+    local result = elementwise(
+        a,
+        b,
+        function(x, y)
+            return x * y
+        end
+    )
+
+    return attach_grad_fn(
+        result,
+        "mul",
+        {a, b},
+        MulGrad.backward
+    )
+
 end
 
 function arithmetic.div(a, b)
