@@ -265,7 +265,7 @@ function Tensor:__sub(other)
 end
 
 function Tensor:__unm()
-    return self:scale(-1)
+    return self:neg()
 end
 
 function Tensor:__tostring()
