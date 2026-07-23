@@ -5,6 +5,9 @@ local Node = require("lunatic.math.autograd.node")
 local Context = require("lunatic.math.autograd.context")
 local AddGrad = require("lunatic.math.autograd.functions.add")
 local MulGrad = require("lunatic.math.autograd.functions.mul")
+local SubGrad = require("lunatic.math.autograd.functions.sub")
+local NegGrad = require("lunatic.math.autograd.functions.neg")
+local DivGrad = require("lunatic.math.autograd.functions.div")
 
 local arithmetic = {}
 
@@ -149,7 +152,22 @@ function arithmetic.add(a, b)
 end
 
 function arithmetic.sub(a, b)
-    return elementwise(a, b, function(x, y) return x - y end)
+
+    local result = elementwise(
+        a,
+        b,
+        function(x, y)
+            return x - y
+        end
+    )
+
+    return attach_grad_fn(
+        result,
+        "sub",
+        {a, b},
+        SubGrad.backward
+    )
+
 end
 
 function arithmetic.mul(a, b)
@@ -171,8 +189,23 @@ function arithmetic.mul(a, b)
 
 end
 
-function arithmetic.div(a, b)
-    return elementwise(a, b, function(x, y) return x / y end)
+function arithmetic.sub(a, b)
+
+    local result = elementwise(
+        a,
+        b,
+        function(x, y)
+            return x / y
+        end
+    )
+
+    return attach_grad_fn(
+        result,
+        "div",
+        {a, b},
+        DivGrad.backward
+    )
+
 end
 
 function arithmetic.scale(a, scalar)
@@ -180,7 +213,22 @@ function arithmetic.scale(a, scalar)
 end
 
 function arithmetic.neg(a)
-    return scalar_elementwise(a, 0, function(_, x) return -x end)
+
+    local result = scalar_elementwise(
+        a,
+        0,
+        function(_, x)
+            return -x
+        end
+    )
+
+    return attach_grad_fn(
+        result,
+        "neg",
+        {a},
+        NegGrad.backward
+    )
+
 end
 
 --
