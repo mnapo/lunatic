@@ -52,30 +52,6 @@ This Code of Conduct applies to:
 - Discussions
 - Any form of project-related communication
 
----
-
-## Philosophy alignment
-
-Lunatic is built on the principle:
-
-> Readable first, performant by design.
-
-This also applies to communication: clarity and respect are preferred over complexity or ego.
-
----
-
-## Enforcement
-
-Maintainers are responsible for enforcing this Code of Conduct fairly and consistently.
-
-Actions may include:
-
-- Requesting behavior adjustments
-- Temporary restriction from participation
-- Removal from the project in severe cases
-
----
-
 ## Final note
 
 This project is still in early development (V0.0.2).
