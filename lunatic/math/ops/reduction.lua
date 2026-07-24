@@ -71,7 +71,16 @@ function reduction.sum(tensor)
 end
 
 function reduction.mean(tensor)
-    return reduction.sum(tensor) / tensor.size
+
+    local result = reduction.sum(tensor)
+
+    local value = result:get(1) / tensor.size
+
+    return reduction.factory(
+        {value},
+        {1}
+    )
+
 end
 
 return reduction
