@@ -2,19 +2,10 @@ local Storage = require("lunatic.math.internal.storage")
 local stride = require("lunatic.math.internal.stride")
 local shape = require("lunatic.math.shape")
 local indexing = require("lunatic.math.internal.indexing")
-local arithmetic = require("lunatic.math.ops.arithmetic")
-local reduction = require("lunatic.math.ops.reduction")
 local engine = require("lunatic.math.autograd.engine")
 
 local Tensor = {}
 Tensor.__index = Tensor
-
-local function tensor_factory(data, shape)
-    return Tensor.new(data, shape)
-end
-
-arithmetic.init(tensor_factory)
-reduction.init(tensor_factory)
 
 --
 -- Helpers
@@ -62,6 +53,14 @@ function Tensor.new(data_table, shape_table)
 
     return self
 end
+
+local arithmetic = require("lunatic.math.ops.arithmetic")
+local reduction = require("lunatic.math.ops.reduction")
+local TensorFactory = require("lunatic.math.internal.tensor_factory")
+
+TensorFactory.init(Tensor.new)
+arithmetic.init(TensorFactory.create)
+reduction.init(TensorFactory.create)
 
 function Tensor._from_storage(storage, shape_table, offset, autograd)
     local self = setmetatable({}, Tensor)
@@ -265,7 +264,7 @@ function Tensor:__sub(other)
 end
 
 function Tensor:__unm()
-    return self:scale(-1)
+    return self:neg()
 end
 
 function Tensor:__tostring()

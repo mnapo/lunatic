@@ -18,6 +18,7 @@ function Node.new(operation, inputs, backward_fn)
     self.inputs = inputs
     self.backward_fn = backward_fn
     self.output = nil
+    self.saved = {}
 
     return self
 end
@@ -26,12 +27,17 @@ function Node:set_output(tensor)
     self.output = tensor
 end
 
+function Node:save(key, value)
+    self.saved[key] = value
+end
+
 function Node:backward(gradient)
 
     return self.backward_fn(
         gradient,
         self.inputs,
-        self.output
+        self.output,
+        self.saved
     )
 
 end

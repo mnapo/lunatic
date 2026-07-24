@@ -1,3 +1,7 @@
+local Node = require("lunatic.math.autograd.node")
+local Context = require("lunatic.math.autograd.context")
+local SumGrad = require("lunatic.math.autograd.functions.sum")
+
 local reduction = {}
 
 reduction.factory = nil
@@ -29,13 +33,54 @@ end
 --
 
 function reduction.sum(tensor)
-    return reduce_all(tensor, 0, function(acc, value)
-        return acc + value
-    end)
+
+    ensure_factory()
+
+    local value = reduce_all(
+        tensor,
+        0,
+        function(acc, value)
+            return acc + value
+        end
+    )
+
+    local result = reduction.factory(
+        {value},
+        {1}
+    )
+
+
+    if Context.is_enabled()
+        and tensor.requires_grad then
+
+        local node = Node.new(
+            "sum",
+            {tensor},
+            SumGrad.backward
+        )
+
+        node:set_output(result)
+
+        result.requires_grad = true
+        result.grad_fn = node
+
+    end
+
+    return result
+
 end
 
 function reduction.mean(tensor)
-    return reduction.sum(tensor) / tensor.size
+
+    local result = reduction.sum(tensor)
+
+    local value = result:get(1) / tensor.size
+
+    return reduction.factory(
+        {value},
+        {1}
+    )
+
 end
 
 return reduction
