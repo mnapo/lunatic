@@ -1,12 +1,21 @@
+local broadcast = require("lunatic.math.broadcast")
+
 local Add = {}
 
-function Add.backward(gradient, inputs, output)
-
+function Add.backward(gradient, inputs)
     return {
-        gradient,
-        gradient
-    }
 
+        broadcast.reduce_gradient(
+            gradient,
+            inputs[1].shape
+        ),
+
+        broadcast.reduce_gradient(
+            gradient,
+            inputs[2].shape
+        )
+
+    }
 end
 
 return Add
