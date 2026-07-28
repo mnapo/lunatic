@@ -91,8 +91,10 @@ This version establishes the foundation for:
 - Added support for singleton-dimension broadcasting and zero-size tensor handling
 - Added regression and edge-case tests for incompatible shapes, scalar-to-matrix operations, singleton middle dimensions, and empty tensors
 - Added a benchmark harness and Markdown report under the benches folder to document broadcasting performance
+- Basic autograd's functions
 
 ### Changed
 - Arithmetic operations now accept broadcast-compatible tensors instead of requiring identical shapes
 - Tensor math behavior was expanded to cover common broadcasting scenarios in a predictable way
 - Benchmarking and validation coverage were added to track correctness and performance of broadcasting paths
+- Tensors now are produced by TensorFactory
