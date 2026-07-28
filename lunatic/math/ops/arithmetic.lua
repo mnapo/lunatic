@@ -217,7 +217,7 @@ function arithmetic.neg(a)
     local result = scalar_elementwise(
         a,
         0,
-        function(_, x)
+        function(x, _)
             return -x
         end
     )
