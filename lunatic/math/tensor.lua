@@ -219,6 +219,10 @@ function Tensor:mul(other)
     return arithmetic.mul(self, other)
 end
 
+function Tensor:div(other)
+    return arithmetic.div(self, other)
+end
+
 function Tensor:scale(scalar)
     return arithmetic.scale(self, scalar)
 end
@@ -256,7 +260,7 @@ function Tensor:__mul(other)
 end
 
 function Tensor:__div(other)
-    return arithmetic.div(self, other)
+    return self:div(other)
 end
 
 function Tensor:__sub(other)
