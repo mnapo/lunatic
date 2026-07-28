@@ -189,7 +189,7 @@ function arithmetic.mul(a, b)
 
 end
 
-function arithmetic.sub(a, b)
+function arithmetic.div(a, b)
 
     local result = elementwise(
         a,
