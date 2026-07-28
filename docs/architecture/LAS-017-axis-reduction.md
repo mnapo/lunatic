@@ -1,4 +1,4 @@
-## LAS-013 — Tensor Reduction Along Dimensions
+## LAS-017 - Tensor Reduction Along Dimensions
 
 ### Status
 
