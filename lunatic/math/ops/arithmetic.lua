@@ -189,7 +189,7 @@ function arithmetic.mul(a, b)
 
 end
 
-function arithmetic.sub(a, b)
+function arithmetic.div(a, b)
 
     local result = elementwise(
         a,
@@ -217,7 +217,7 @@ function arithmetic.neg(a)
     local result = scalar_elementwise(
         a,
         0,
-        function(_, x)
+        function(x, _)
             return -x
         end
     )
