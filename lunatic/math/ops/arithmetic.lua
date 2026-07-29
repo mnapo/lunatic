@@ -1,28 +1,36 @@
 local shape = require("lunatic.math.shape")
 local broadcast = require("lunatic.math.broadcast")
 local indexing = require("lunatic.math.internal.indexing")
+
 local Node = require("lunatic.math.autograd.node")
 local Context = require("lunatic.math.autograd.context")
+
 local AddGrad = require("lunatic.math.autograd.functions.add")
-local MulGrad = require("lunatic.math.autograd.functions.mul")
 local SubGrad = require("lunatic.math.autograd.functions.sub")
-local NegGrad = require("lunatic.math.autograd.functions.neg")
+local MulGrad = require("lunatic.math.autograd.functions.mul")
 local DivGrad = require("lunatic.math.autograd.functions.div")
+local NegGrad = require("lunatic.math.autograd.functions.neg")
 
 local arithmetic = {}
 
 arithmetic.factory = nil
 
+
 function arithmetic.init(factory)
     arithmetic.factory = factory
 end
 
+
 local function ensure_factory()
-    assert(arithmetic.factory, "arithmetic: factory not initialized")
+    assert(
+        arithmetic.factory,
+        "arithmetic: factory not initialized"
+    )
 end
 
+
 --
--- Autograd helpers
+-- Autograd
 --
 
 local function attach_grad_fn(result, operation, inputs, backward_fn)
@@ -30,7 +38,8 @@ local function attach_grad_fn(result, operation, inputs, backward_fn)
     if not Context.is_enabled() then
         return result
     end
-    
+
+
     local requires_grad = false
 
     for _, tensor in ipairs(inputs) do
@@ -40,17 +49,21 @@ local function attach_grad_fn(result, operation, inputs, backward_fn)
         end
     end
 
+
     if not requires_grad then
         return result
     end
 
+
     result.requires_grad = true
+
 
     local node = Node.new(
         operation,
         inputs,
         backward_fn
     )
+
 
     node:set_output(result)
 
@@ -59,91 +72,166 @@ local function attach_grad_fn(result, operation, inputs, backward_fn)
     return result
 end
 
+
 --
--- Core Elementwise Operations
+-- Tensor-Tensor elementwise
 --
 
-local function elementwise(a, b, op)
+local function elementwise(a, b, operation)
+
     ensure_factory()
 
-    local out_shape = broadcast.resolve(a.shape, b.shape)
-    local out_size = shape.size(out_shape)
+    local out_shape =
+        broadcast.resolve(
+            a.shape,
+            b.shape
+        )
+
+
+    local out_size =
+        shape.size(out_shape)
+
 
     local data = {}
 
-    -- normalize shapes to output ndim and build normalized strides
-    local ndim = #out_shape
-    local A = shape.normalize(a.shape, ndim)
-    local B = shape.normalize(b.shape, ndim)
 
-    local function normalize_strides(tensor, norm_shape)
+    local ndim = #out_shape
+
+    local A =
+        shape.normalize(
+            a.shape,
+            ndim
+        )
+
+    local B =
+        shape.normalize(
+            b.shape,
+            ndim
+        )
+
+
+    local function normalize_strides(tensor)
+
         local out = {}
-        local orig_ndim = #tensor.shape
-        for i = 1, #norm_shape do
-            local orig_idx = orig_ndim - #norm_shape + i
-            if orig_idx >= 1 then
-                out[i] = tensor.strides[orig_idx]
+        local offset =
+            ndim - #tensor.shape
+
+        for i = 1, ndim do
+
+            local source = i - offset
+
+            if source >= 1 then
+                out[i] = tensor.strides[source]
             else
                 out[i] = 0
             end
+
         end
+
         return out
     end
 
-    local stridesA = normalize_strides(a, A)
-    local stridesB = normalize_strides(b, B)
+
+    local stridesA = normalize_strides(a)
+    local stridesB = normalize_strides(b)
+
 
     for i = 1, out_size do
-        local out_idx = indexing.unravel(out_shape, i)
 
-        local idxA, idxB = broadcast.map_index(out_idx, a.shape, b.shape, out_shape)
+        local out_index =
+            indexing.unravel(
+                out_shape,
+                i
+            )
 
-        local linA = indexing.compute(A, stridesA, a.offset, idxA)
-        local linB = indexing.compute(B, stridesB, b.offset, idxB)
 
-        local va = a.storage:get(linA)
-        local vb = b.storage:get(linB)
+        local idxA, idxB =
+            broadcast.map_index(
+                out_index,
+                a.shape,
+                b.shape,
+                out_shape
+            )
 
-        data[i] = op(va, vb)
+
+        local flatA =
+            indexing.compute(
+                A,
+                stridesA,
+                a.offset,
+                idxA
+            )
+
+
+        local flatB =
+            indexing.compute(
+                B,
+                stridesB,
+                b.offset,
+                idxB
+            )
+
+
+        data[i] =
+            operation(
+                a.storage:get(flatA),
+                b.storage:get(flatB)
+            )
+
     end
 
-    return arithmetic.factory(data, out_shape)
+
+    return arithmetic.factory(
+        data,
+        out_shape
+    )
+
 end
 
+
 --
--- Scalar Elementwise Operations
+-- Scalar operations
 --
 
-local function scalar_elementwise(a, scalar, op)
+local function scalar_elementwise(a, scalar, operation)
+
     ensure_factory()
 
     local data = {}
-    local size = a.size
 
-    for i = 1, size do
-        local v = a.storage:get(i)
-        data[i] = op(v, scalar)
+    for i = 1, a.size do
+
+        data[i] =
+            operation(
+                a.storage:get(i),
+                scalar
+            )
+
     end
 
-    return arithmetic.factory(data, a.shape)
+
+    return arithmetic.factory(
+        data,
+        a.shape
+    )
+
 end
 
+
 --
--- Public ops
+-- Public operations
 --
 
 function arithmetic.add(a, b)
 
-    local result = elementwise(
-        a,
-        b,
-        function(x, y)
-            return x + y
-        end
-    )
-
     return attach_grad_fn(
-        result,
+        elementwise(
+            a,
+            b,
+            function(x, y)
+                return x + y
+            end
+        ),
         "add",
         {a, b},
         AddGrad.backward
@@ -151,18 +239,17 @@ function arithmetic.add(a, b)
 
 end
 
+
 function arithmetic.sub(a, b)
 
-    local result = elementwise(
-        a,
-        b,
-        function(x, y)
-            return x - y
-        end
-    )
-
     return attach_grad_fn(
-        result,
+        elementwise(
+            a,
+            b,
+            function(x, y)
+                return x - y
+            end
+        ),
         "sub",
         {a, b},
         SubGrad.backward
@@ -170,18 +257,17 @@ function arithmetic.sub(a, b)
 
 end
 
+
 function arithmetic.mul(a, b)
 
-    local result = elementwise(
-        a,
-        b,
-        function(x, y)
-            return x * y
-        end
-    )
-
     return attach_grad_fn(
-        result,
+        elementwise(
+            a,
+            b,
+            function(x, y)
+                return x * y
+            end
+        ),
         "mul",
         {a, b},
         MulGrad.backward
@@ -189,18 +275,17 @@ function arithmetic.mul(a, b)
 
 end
 
+
 function arithmetic.div(a, b)
 
-    local result = elementwise(
-        a,
-        b,
-        function(x, y)
-            return x / y
-        end
-    )
-
     return attach_grad_fn(
-        result,
+        elementwise(
+            a,
+            b,
+            function(x, y)
+                return x / y
+            end
+        ),
         "div",
         {a, b},
         DivGrad.backward
@@ -208,22 +293,30 @@ function arithmetic.div(a, b)
 
 end
 
+
 function arithmetic.scale(a, scalar)
-    return scalar_elementwise(a, scalar, function(x, s) return x * s end)
-end
 
-function arithmetic.neg(a)
-
-    local result = scalar_elementwise(
+    return scalar_elementwise(
         a,
-        0,
-        function(x, _)
-            return -x
+        scalar,
+        function(x, s)
+            return x * s
         end
     )
 
+end
+
+
+function arithmetic.neg(a)
+
     return attach_grad_fn(
-        result,
+        scalar_elementwise(
+            a,
+            0,
+            function(x, _)
+                return -x
+            end
+        ),
         "neg",
         {a},
         NegGrad.backward
@@ -231,10 +324,5 @@ function arithmetic.neg(a)
 
 end
 
---
--- OPTIONAL: explicit elementwise API (future extensibility)
---
-
-arithmetic.elementwise = elementwise
 
 return arithmetic
